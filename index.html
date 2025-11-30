@@ -66,6 +66,50 @@
       transform: translate(-50%, -50%);
       z-index: 1001;
     }
+    
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      border: none;
+    }
+    
+    .card-header {
+      background-color: #343a40;
+      color: white;
+      border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .btn-warning {
+      background-color: #ffc107;
+      border-color: #ffc107;
+      font-weight: bold;
+    }
+    
+    .nav-link.active {
+      color: #ffc107 !important;
+      font-weight: bold;
+    }
+    
+    .section-title {
+      color: #343a40;
+      border-bottom: 2px solid #ffc107;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .calculation-result {
+      background-color: #e9ecef;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    
+    .total-amount {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #28a745;
+    }
   </style>
 </head>
 
@@ -113,265 +157,278 @@
   <div class="container mt-4">
     <!-- Home Page -->
     <div id="home" class="page-section active">
-      <form id="salaryForm">
-        <div class="form-group">
-          <label for="fundType"><strong>Member Type:</strong></label>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
-            <label class="form-check-label" for="musisCheckbox">
-              Are you a Musis?
-            </label>
-          </div>
+      <h2 class="section-title">Chanda Calculator</h2>
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Member Information</h5>
         </div>
-        
-        <label for="fundType"><strong>Member Group:</strong></label>
-        <div class="container">
-          <div class="row">
-            <div class="col">
-              <label>
-                <input type="radio" name="group" value="Khuddam"> Khuddam
-              </label>
-            </div>
-            <div class="col">
-              <label>
-                <input type="radio" name="group" value="Lajna"> Lajna
-              </label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label>
-                <input type="radio" name="group" value="Ansar"> Ansar
-              </label>
-            </div>
-            <div class="col">
-              <label>
-                <input type="radio" name="group" value="Student"> Student
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="salary"><strong>Income:</strong> </label>
-          <input type="number" id="salary" class="form-control" min="0" required>
-        </div>
-        
-        <label for="CheckTehrik"><strong>Optional:</strong> </label>
-        <div class="row">
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="CheckTehrik">
-              <label class="form-check-label" for="CheckTehrik">
-                Tehrik-e-Jadid
-              </label>
-              <div class="form-group">
-                <input type="number" id="numberInputTehrik" class="Inputcontrol number-input" min="0">
+        <div class="card-body">
+          <form id="salaryForm">
+            <div class="form-group">
+              <label for="fundType"><strong>Member Type:</strong></label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
+                <label class="form-check-label" for="musisCheckbox">
+                  Are you a Musis?
+                </label>
               </div>
             </div>
-          </div>
-          <div class="col">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="CheckWaqf">
-              <label class="form-check-label" for="CheckWaqf">
-                Waqf-e-Jadid
-              </label>
-              <div class="form-group">
-                <input type="number" id="numberInputwaqf" class="Inputcontrol number-input" min="0">
+            
+            <div class="form-group">
+              <label for="memberGroup"><strong>Member Group:</strong></label>
+              <select class="form-control" id="memberGroup" name="group" required>
+                <option value="">Select Member Group</option>
+                <option value="Khuddam">Khuddam</option>
+                <option value="Lajna">Lajna</option>
+                <option value="Non-working Lajna">Non-working Lajna</option>
+                <option value="Ansar">Ansar</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="salary"><strong>Monthly Income (Rs):</strong></label>
+              <input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
+            </div>
+            
+            <div class="form-group">
+              <label><strong>Optional Contributions:</strong></label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="CheckTehrik">
+                    <label class="form-check-label" for="CheckTehrik">
+                      Tehrik-e-Jadid
+                    </label>
+                    <div class="form-group mt-2">
+                      <input type="number" id="numberInputTehrik" class="Inputcontrol number-input" min="0" placeholder="Amount (Rs)">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="CheckWaqf">
+                    <label class="form-check-label" for="CheckWaqf">
+                      Waqf-e-Jadid
+                    </label>
+                    <div class="form-group mt-2">
+                      <input type="number" id="numberInputwaqf" class="Inputcontrol number-input" min="0" placeholder="Amount (Rs)">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <br>
-        <button style="width: 100%;" type="button" id="btnCalc" class="btn btn-warning">Calculate</button>
-      </form>
+            <button type="button" id="btnCalc" class="btn btn-warning btn-block">
+              Calculate Chanda
+            </button>
+          </form>
+        </div>
+      </div>
       
-      <br>
-      <div id="table-container"></div>
-      <table id="myTable" class="table mt-4">
-        <thead>
-          <tr>
-            <th>Funds</th>
-            <th>Amount (Rs)</th>
-            <th style="width:30%">+ (Rs)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="aamString">Aam</td>
-            <td id="aamValue"></td>
-            <td><input type="number" id="inputAam" style="width:50%" min="0"></td>
-          </tr>
-          <tr>
-            <td>Jalsa</td>
-            <td id="jalsaValue"></td>
-            <td><input type="number" id="inputJalsa" style="width:50%" min="0"></td>
-          </tr>
-          <tr>
-            <td id="groupString">Khuddam</td>
-            <td id="khuddamValue"></td>
-            <td><input type="number" id="inputKhuddam" style="width:50%" min="0"></td>
-          </tr>
-          <tr>
-            <td>Ijtema</td>
-            <td id="ijtemaValue"></td>
-            <td><input type="number" id="inputIjtema" style="width:50%" min="0"></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold;">Total</td>
-            <td style="font-weight: bold;" id="totalValue"></td>
-            <td style="font-weight: bold;" id="additionalFund">
-              <button id="addRowBtn" type="button" class="btn btn-warning">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"></path>
-                </svg>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br /><br /><br />
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5 class="mb-0">Chanda Breakdown</h5>
+        </div>
+        <div class="card-body">
+          <div id="table-container"></div>
+          <table id="myTable" class="table mt-4">
+            <thead>
+              <tr>
+                <th>Funds</th>
+                <th>Amount (Rs)</th>
+                <th style="width:30%">Additional (Rs)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="aamString">Aam</td>
+                <td id="aamValue">-</td>
+                <td><input type="number" id="inputAam" style="width:75%" min="0" value="0"></td>
+              </tr>
+              <tr>
+                <td>Jalsa</td>
+                <td id="jalsaValue">-</td>
+                <td><input type="number" id="inputJalsa" style="width:75%" min="0" value="0"></td>
+              </tr>
+              <tr>
+                <td id="groupString">Khuddam</td>
+                <td id="khuddamValue">-</td>
+                <td><input type="number" id="inputKhuddam" style="width:75%" min="0" value="0"></td>
+              </tr>
+              <tr>
+                <td>Ijtema</td>
+                <td id="ijtemaValue">-</td>
+                <td><input type="number" id="inputIjtema" style="width:75%" min="0" value="0"></td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Total</td>
+                <td style="font-weight: bold;" id="totalValue">-</td>
+                <td style="font-weight: bold;" id="additionalFund">
+                  <button id="addRowBtn" type="button" class="btn btn-warning btn-sm">
+                    Add Fund
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="calculation-result">
+            <h5>Monthly Chanda Total: <span class="total-amount" id="finalTotalValue">Rs 0</span></h5>
+            <p class="text-muted mb-0">This is your estimated monthly Chanda contribution based on the provided information.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- About Page -->
     <div id="about" class="page-section">
-      <h2>About</h2>
-      <div class="col-sm-12 col-md-12 py-4">
-        <h4 class="text-white">About</h4>
-        <p class="text-muted">The Chanda Calculator is a user-friendly web application designed by MKA Pailles to assist the Ahmadi community members in calculating their Chanda payments accurately. Whether you're a Khuddam, Lajna, or part of the Wassiyat scheme, this tool simplifies the process and ensures transparency.</p>
+      <h2 class="section-title">About</h2>
+      <div class="card">
+        <div class="card-body">
+          <h4>About</h4>
+          <p class="text-muted">The Chanda Calculator is a user-friendly web application designed by MKA Pailles to assist the Ahmadi community members in calculating their Chanda payments accurately. Whether you're a Khuddam, Lajna, or part of the Wassiyat scheme, this tool simplifies the process and ensures transparency.</p>
+        </div>
       </div>
     </div>
 
     <!-- Privacy Page -->
     <div id="privacy" class="page-section">
-      <div class="col-sm-12 col-md-12 py-4">
-        <h2>Privacy and Security</h2>
-        <h4 class="text-white">Privacy and Security</h4>
-        <ul style="list-style-type:square; color:#6c757d;">
-          <li><span style="color:#6c757d;">The Chanda Calculator operates entirely on your local web browser. No data is stored or transmitted to external servers.</span></li>
-          <li><span style="color:#6c757d;">Your privacy is our priority. Once you close the browser, all entered information is automatically cleared.</span></li>
-        </ul>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="section-title">Privacy and Security</h2>
+          <h4>Privacy and Security</h4>
+          <ul style="list-style-type:square; color:#6c757d;">
+            <li><span style="color:#6c757d;">The Chanda Calculator operates entirely on your local web browser. No data is stored or transmitted to external servers.</span></li>
+            <li><span style="color:#6c757d;">Your privacy is our priority. Once you close the browser, all entered information is automatically cleared.</span></li>
+          </ul>
+        </div>
       </div>
     </div>
 
     <!-- Rate Page -->
     <div id="rate" class="page-section">
-      <h4>% Rate </h4>
-      <table class="table table-striped" style="margin-right: calc(1%); width: 99%;">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col" style="width: 6.2232%;"><span style="font-size: 12px;">#</span></th>
-            <th scope="col" style="width: 6.6023%;"><span style="font-size: 12px;">%</span></th>
-            <th scope="col" style="width: 15.017%;"><span style="font-size: 12px;">Funds</span></th>
-            <th scope="col" style="width: 72.1042%;"><span style="font-size: 12px;">Example</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">1</span></th>
-            <td style="width: 6.6023%;"><span style="font-size: 12px;">10%</span></td>
-            <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Wassiyat Khuddam, Lajna and Ansar</span></td>
-            <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid <span style="color: rgb(226, 80, 65);">monthly</span></span></td>
-          </tr>
-          <tr>
-            <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">2</span></th>
-            <td style="width: 6.6023%;"><span style="font-size: 12px;">6.25%<br></span></td>
-            <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Aam Khuddam, Lajna and Ansar<br></span></td>
-            <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs625 should be paid <span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
-          </tr>
-          <tr>
-            <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">3</span></th>
-            <td style="width: 6.6023%;"><span style="font-size: 12px;">10%<br></span></td>
-            <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Jalsa Khuddam, Lajna and Ansar<br></span></td>
-            <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs 83.33 per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
-          </tr>
-          <tr>
-            <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">4</span></th>
-            <td style="width: 6.6023%;"><span style="font-size: 12px;">1%<br></span></td>
-            <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Khuddam, Lajna and Ansar<br></span></td>
-            <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs100 should be paid&nbsp;<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
-          </tr>
-          <tr>
-            <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">5</span></th>
-            <td style="width: 6.6023%;"><span style="font-size: 12px;">3%<br></span></td>
-            <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Khuddam and Lajna<br></span></td>
-            <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs300 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs25 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
-          </tr>
-          <tr>
-            <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">6</span></th>
-            <td style="width: 6.6023%;"><span style="font-size: 12px;">0.08%<br></span></td>
-            <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Ansar<br></span></td>
-            <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs108 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs9 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
-          </tr>
-        </tbody>
-      </table>
-      <blockquote class="blockquote">
-        <p><span style="font-size:10px;"><i>Note : Students and non-working members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px;"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 15 for Chanda Ijtama.</i></span></p>
-      </blockquote>
-      <p><br><br><br></p>
+      <h2 class="section-title">% Rate</h2>
+      <div class="card">
+        <div class="card-body">
+          <h4>% Rate </h4>
+          <table class="table table-striped" style="margin-right: calc(1%); width: 99%;">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col" style="width: 6.2232%;"><span style="font-size: 12px;">#</span></th>
+                <th scope="col" style="width: 6.6023%;"><span style="font-size: 12px;">%</span></th>
+                <th scope="col" style="width: 15.017%;"><span style="font-size: 12px;">Funds</span></th>
+                <th scope="col" style="width: 72.1042%;"><span style="font-size: 12px;">Example</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">1</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">10%</span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Wassiyat Khuddam, Lajna and Ansar</span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid <span style="color: rgb(226, 80, 65);">monthly</span></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">2</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">6.25%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Aam Khuddam, Lajna and Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs625 should be paid <span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">3</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">10%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Jalsa Khuddam, Lajna and Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs 83.33 per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">4</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">1%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Khuddam, Lajna and Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs100 should be paid&nbsp;<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">5</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">3%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Khuddam and Lajna<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs300 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs25 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">6</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">0.08%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs108 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs9 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <blockquote class="blockquote">
+            <p><span style="font-size:10px;"><i>Note : Students and non-working members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px;"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 15 for Chanda Ijtama.</i></span></p>
+          </blockquote>
+        </div>
+      </div>
     </div>
 
     <!-- AIMS Page -->
     <div id="aims" class="page-section">
-      <div class="col-sm-12 col-md-12 py-4">
-        <h2>AIMS</h2>
-        <form id="aimsForm">
-          <!-- Text field for number AIMS-->
-          <div class="form-group">
-            <label for="inputAddress">Aims Number</label>
-            <input type="number" class="form-control" id="AIMSnumber" name="number" required>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="section-title">AIMS</h2>
+          <form id="aimsForm">
+            <!-- Text field for number AIMS-->
+            <div class="form-group">
+              <label for="inputAddress">Aims Number</label>
+              <input type="number" class="form-control" id="AIMSnumber" name="number" required>
+            </div>
+            <h6>From</h6>
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Year</label>
+              <select class="form-control" id="year"></select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputPassword4">Month</label>
+              <select class="form-control" id="month" name="month">
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+            <h6>To</h6>
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Year</label>
+              <select class="form-control" id="toYear"></select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputPassword4">Month</label>
+              <select class="form-control" id="toMonth" name="month">
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+            <br>
+            <button id="save-button" type="submit" style="width:100%;" class="btn btn-warning">Save</button>
+          </form>
+          <div class="container mt-4">
+            <div id="errorMessages" class="mt-3 text-danger"></div>
+            <div id="successMessages" class="mt-3 text-success"></div>
           </div>
-          <h6>From</h6>
-          <div class="form-group col-md-6">
-            <label for="inputEmail4">Year</label>
-            <select class="form-control" id="year"></select>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="inputPassword4">Month</label>
-            <select class="form-control" id="month" name="month">
-              <option value="January">January</option>
-              <option value="February">February</option>
-              <option value="March">March</option>
-              <option value="April">April</option>
-              <option value="May">May</option>
-              <option value="June">June</option>
-              <option value="July">July</option>
-              <option value="August">August</option>
-              <option value="September">September</option>
-              <option value="October">October</option>
-              <option value="November">November</option>
-              <option value="December">December</option>
-            </select>
-          </div>
-          <h6>To</h6>
-          <div class="form-group col-md-6">
-            <label for="inputEmail4">Year</label>
-            <select class="form-control" id="toYear"></select>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="inputPassword4">Month</label>
-            <select class="form-control" id="toMonth" name="month">
-              <option value="January">January</option>
-              <option value="February">February</option>
-              <option value="March">March</option>
-              <option value="April">April</option>
-              <option value="May">May</option>
-              <option value="June">June</option>
-              <option value="July">July</option>
-              <option value="August">August</option>
-              <option value="September">September</option>
-              <option value="October">October</option>
-              <option value="November">November</option>
-              <option value="December">December</option>
-            </select>
-          </div>
-          <br>
-          <button id="save-button" type="submit" style="width:100%;" class="btn btn-warning">Save</button>
-        </form>
-        <div class="container mt-4">
-          <div id="errorMessages" class="mt-3 text-danger"></div>
-          <div id="successMessages" class="mt-3 text-success"></div>
         </div>
       </div>
     </div>
@@ -441,6 +498,14 @@
           document.getElementById(p).classList.remove("active");
         });
         document.getElementById(page).classList.add("active");
+        
+        // Update active nav link
+        document.querySelectorAll('.nav-link').forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${page}`) {
+            link.classList.add('active');
+          }
+        });
       }
 
       // Initial page load
@@ -465,11 +530,13 @@
       checkTehrik.addEventListener("change", () => {
         numberInputTehrik.style.display = checkTehrik.checked ? "block" : "none";
         if (!checkTehrik.checked) numberInputTehrik.value = "";
+        calculate();
       });
 
       checkWaqf.addEventListener("change", () => {
         numberInputWaqf.style.display = checkWaqf.checked ? "block" : "none";
         if (!checkWaqf.checked) numberInputWaqf.value = "";
+        calculate();
       });
     }
 
@@ -479,11 +546,19 @@
       const yearSelect = document.getElementById("year");
       const toYearSelect = document.getElementById("toYear");
 
+      // Clear existing options
+      yearSelect.innerHTML = '';
+      toYearSelect.innerHTML = '';
+
       for (let i = 0; i < 3; i++) {
         const year = currentYear - i;
         yearSelect.add(new Option(year, year));
         toYearSelect.add(new Option(year, year));
       }
+      
+      // Set default values
+      yearSelect.value = currentYear;
+      toYearSelect.value = currentYear;
     }
 
     function loadSavedData() {
@@ -524,6 +599,12 @@
       inputs.forEach(input => {
         input.addEventListener("input", calculate);
       });
+      
+      // Member group change listener
+      document.getElementById("memberGroup").addEventListener("change", calculate);
+      
+      // Musis checkbox change listener
+      document.getElementById("musisCheckbox").addEventListener("change", calculate);
     }
 
     function generateAimsTable(data) {
@@ -540,7 +621,8 @@
       
       // Create table
       const table = document.createElement('table');
-      table.style.cssText = 'width:65%; border:0px;';
+      table.className = 'table table-bordered';
+      table.style.cssText = 'width:100%;';
       
       // Create header row
       const headerRow = table.insertRow();
@@ -549,7 +631,7 @@
           const headerText = (key === 'From' && !displayTo) ? 'Month' : key;
           const headerCell = document.createElement('th');
           headerCell.textContent = headerText;
-          headerCell.style.cssText = 'text-align: center;font-size: smaller;font-weight: bold;';
+          headerCell.style.cssText = 'text-align: center;font-weight: bold;';
           headerRow.appendChild(headerCell);
         }
       }
@@ -560,7 +642,7 @@
         if (data[key] !== null && !data[key].includes("null")) {
           const valueCell = valueRow.insertCell();
           valueCell.textContent = data[key];
-          valueCell.style.cssText = 'text-align: center;font-size: smaller;';
+          valueCell.style.cssText = 'text-align: center;';
         }
       }
       
@@ -582,12 +664,14 @@
       fundInput.type = "text";
       fundInput.style.width = "100%";
       fundInput.placeholder = "Fund Name";
+      fundInput.className = "form-control";
       
       const amountInput = document.createElement("input");
       amountInput.type = "number";
       amountInput.style.width = "75%";
       amountInput.min = "0";
-      amountInput.className = "additionalField";
+      amountInput.className = "additionalField form-control";
+      amountInput.value = "0";
       amountInput.addEventListener("input", calculate);
       
       // Append inputs to cells
@@ -599,85 +683,96 @@
     }
 
     function calculate() {
-      // Get form values
-      const salary = parseFloat(document.getElementById("salary").value) || 0;
-      const isMusis = document.getElementById("musisCheckbox").checked;
-      const group = document.querySelector('input[name="group"]:checked')?.value;
-      const inputTehrik = parseFloat(document.getElementById("numberInputTehrik").value) || 0;
-      const inputWaqf = parseFloat(document.getElementById("numberInputwaqf").value) || 0;
-      const inputAam = parseFloat(document.getElementById("inputAam").value) || 0;
-      const inputJalsa = parseFloat(document.getElementById("inputJalsa").value) || 0;
-      const inputKhuddam = parseFloat(document.getElementById("inputKhuddam").value) || 0;
-      const inputIjtema = parseFloat(document.getElementById("inputIjtema").value) || 0;
+      // Show loading spinner
+      document.getElementById('loadingSpinner').style.display = 'block';
       
-      // Get additional field values
-      const additionalFields = document.querySelectorAll(".additionalField");
-      let totalAdditional = 0;
-      additionalFields.forEach(field => {
-        totalAdditional += parseFloat(field.value) || 0;
-      });
-      
-      // Validate inputs
-      if (!group) {
-        alert("Please select a member group!");
-        return;
-      }
-      
-      // Calculate based on group and type
-      let aamString, groupString, aam, jalsa, khuddam, ijtema;
-      
-      if (group === "Student") {
-        aamString = "Aam";
-        groupString = "Non-working";
-        aam = 0;
-        jalsa = 0;
-        khuddam = 60;
-        ijtema = 15;
-      } else {
-        // Set string values
-        aamString = isMusis ? "Wassiyat" : "Aam";
-        groupString = group;
+      // Use setTimeout to allow UI to update
+      setTimeout(() => {
+        // Get form values
+        const salary = parseFloat(document.getElementById("salary").value) || 0;
+        const isMusis = document.getElementById("musisCheckbox").checked;
+        const group = document.getElementById("memberGroup").value;
+        const inputTehrik = parseFloat(document.getElementById("numberInputTehrik").value) || 0;
+        const inputWaqf = parseFloat(document.getElementById("numberInputwaqf").value) || 0;
+        const inputAam = parseFloat(document.getElementById("inputAam").value) || 0;
+        const inputJalsa = parseFloat(document.getElementById("inputJalsa").value) || 0;
+        const inputKhuddam = parseFloat(document.getElementById("inputKhuddam").value) || 0;
+        const inputIjtema = parseFloat(document.getElementById("inputIjtema").value) || 0;
         
-        // Calculate amounts based on group and type
-        if (group === "Ansar") {
-          aam = isMusis ? 
-            Math.ceil((10 / 100) * salary) : 
-            Math.ceil((6.25 / 100) * salary);
-          
-          jalsa = Math.ceil((0.833 / 100) * salary);
-          khuddam = Math.ceil((1 / 100) * salary);
-          ijtema = Math.ceil((0.0833 / 100) * salary);
-        } else {
-          aam = isMusis ? 
-            Math.ceil((10 / 100) * salary) : 
-            Math.ceil((6.25 / 100) * salary);
-          
-          jalsa = Math.ceil(((10 / 100) * salary) / 12);
-          khuddam = Math.ceil((1 / 100) * salary);
-          ijtema = Math.ceil(((3 / 100) * salary) / 12);
+        // Get additional field values
+        const additionalFields = document.querySelectorAll(".additionalField");
+        let totalAdditional = 0;
+        additionalFields.forEach(field => {
+          totalAdditional += parseFloat(field.value) || 0;
+        });
+        
+        // Validate inputs
+        if (!group) {
+          // Hide loading spinner
+          document.getElementById('loadingSpinner').style.display = 'none';
+          return;
         }
-      }
-      
-      // Add input adjustments
-      aam += inputAam;
-      jalsa += inputJalsa;
-      khuddam += inputKhuddam;
-      ijtema += inputIjtema;
-      
-      // Calculate total
-      let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
-      
-      // Update UI
-      document.getElementById("aamString").textContent = aamString;
-      document.getElementById("aamValue").textContent = aam;
-      document.getElementById("jalsaValue").textContent = jalsa;
-      document.getElementById("groupString").textContent = groupString;
-      document.getElementById("khuddamValue").textContent = khuddam;
-      document.getElementById("ijtemaValue").textContent = ijtema;
-      document.getElementById("totalValue").textContent = total;
-      
-      // Update optional funds table
-      updateOptionalFunds(inputTehrik, inputWaqf);
+        
+        // Calculate based on group and type
+        let aamString, groupString, aam, jalsa, khuddam, ijtema;
+        
+        if (group === "Student" || group === "Non-working Lajna") {
+          aamString = "Aam";
+          groupString = group === "Student" ? "Non-working" : "Non-working Lajna";
+          aam = 0;
+          jalsa = 0;
+          khuddam = group === "Student" ? 60 : 60; // Rs 60 for both students and non-working Lajna
+          ijtema = group === "Student" ? 15 : 15; // Rs 15 for both students and non-working Lajna
+        } else {
+          // Set string values
+          aamString = isMusis ? "Wassiyat" : "Aam";
+          groupString = group;
+          
+          // Calculate amounts based on group and type
+          if (group === "Ansar") {
+            aam = isMusis ? 
+              Math.ceil((10 / 100) * salary) : 
+              Math.ceil((6.25 / 100) * salary);
+            
+            jalsa = Math.ceil((0.833 / 100) * salary);
+            khuddam = Math.ceil((1 / 100) * salary);
+            ijtema = Math.ceil((0.0833 / 100) * salary);
+          } else {
+            aam = isMusis ? 
+              Math.ceil((10 / 100) * salary) : 
+              Math.ceil((6.25 / 100) * salary);
+            
+            jalsa = Math.ceil(((10 / 100) * salary) / 12);
+            khuddam = Math.ceil((1 / 100) * salary);
+            ijtema = Math.ceil(((3 / 100) * salary) / 12);
+          }
+        }
+        
+        // Add input adjustments
+        aam += inputAam;
+        jalsa += inputJalsa;
+        khuddam += inputKhuddam;
+        ijtema += inputIjtema;
+        
+        // Calculate total
+        let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
+        
+        // Update UI
+        document.getElementById("aamString").textContent = aamString;
+        document.getElementById("aamValue").textContent = aam || '-';
+        document.getElementById("jalsaValue").textContent = jalsa || '-';
+        document.getElementById("groupString").textContent = groupString;
+        document.getElementById("khuddamValue").textContent = khuddam || '-';
+        document.getElementById("ijtemaValue").textContent = ijtema || '-';
+        document.getElementById("totalValue").textContent = total || '-';
+        document.getElementById("finalTotalValue").textContent = `Rs ${total}`;
+        
+        // Update optional funds table
+        updateOptionalFunds(inputTehrik, inputWaqf);
+        
+        // Hide loading spinner
+        document.getElementById('loadingSpinner').style.display = 'none';
+      }, 100);
     }
 
     function updateOptionalFunds(tehrik, waqf) {
@@ -698,83 +793,4 @@
         const newRow = table.insertRow(table.rows.length - 1);
         const cell1 = newRow.insertCell(0);
         const cell2 = newRow.insertCell(1);
-        cell1.textContent = "Tehrik-e-Jadid";
-        cell2.textContent = tehrik;
-      }
-      
-      if (waqf > 0) {
-        const newRow = table.insertRow(table.rows.length - 1);
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        cell1.textContent = "Waqf-e-Jadid";
-        cell2.textContent = waqf;
-      }
-    }
-
-    function doMonthsCompare(month1, month2) {
-      const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-      ];
-      
-      const index1 = months.indexOf(month1);
-      const index2 = months.indexOf(month2);
-      
-      if (index1 === -1 || index2 === -1) {
-        return false;
-      }
-      
-      return index1 > index2;
-    }
-
-    function saveData(event) {
-      event.preventDefault();
-      
-      const year = document.getElementById("year").value;
-      const month = document.getElementById("month").value;
-      const toYear = document.getElementById("toYear").value;
-      const toMonth = document.getElementById("toMonth").value;
-      const AIMSnumber = document.getElementById("AIMSnumber").value;
-      
-      // Validation
-      if (!year || !month || !toYear || !toMonth || !AIMSnumber) {
-        alert("Please fill in all fields.");
-        return;
-      }
-      
-      if (year > toYear) {
-        alert("The 'Year From' field must not exceed the 'Year To' field.");
-        return;
-      }
-      
-      if (year === toYear && doMonthsCompare(month, toMonth)) {
-        alert("Please ensure that the 'Month From' field is set to a month earlier than the 'Month To' field.");
-        return;
-      }
-      
-      // Save data to local storage
-      localStorage.setItem("monthString", month);
-      localStorage.setItem("yearString", year);
-      localStorage.setItem("toYearString", toYear);
-      localStorage.setItem("toMonthString", toMonth);
-      localStorage.setItem("AIMSnumber", AIMSnumber);
-      
-      // Update UI
-      generateAimsTable({
-        'Aims': AIMSnumber,
-        'From': `${month} ${year}`,
-        'To': `${toMonth} ${toYear}`
-      });
-      
-      alert("Your data has been successfully saved! Now, let's head back to the home page to calculate your chanda.");
-    }
-  </script>
-</body>
-
-<footer class="footer mt-auto py-3 bg-dark">
-  <div class="container">
-    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
-  </div>
-</footer>
-
-</html>
+        cell1.textContent = "Tehrik-e-Jadid
