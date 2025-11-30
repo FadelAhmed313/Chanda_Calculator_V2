@@ -110,6 +110,12 @@
       font-weight: bold;
       color: #28a745;
     }
+    
+    .info-icon {
+      color: #ffc107;
+      margin-left: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -169,7 +175,7 @@
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
                 <label class="form-check-label" for="musisCheckbox">
-                  Are you a Musis?
+                  Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i>
                 </label>
               </div>
             </div>
@@ -438,6 +444,7 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
   <script>
     // Register Service Worker for offline functionality
@@ -716,13 +723,14 @@
         // Calculate based on group and type
         let aamString, groupString, aam, jalsa, khuddam, ijtema;
         
+        // Handle non-working members (Student and Non-working Lajna)
         if (group === "Student" || group === "Non-working Lajna") {
           aamString = "Aam";
           groupString = group === "Student" ? "Non-working" : "Non-working Lajna";
           aam = 0;
           jalsa = 0;
-          khuddam = group === "Student" ? 60 : 60; // Rs 60 for both students and non-working Lajna
-          ijtema = group === "Student" ? 15 : 15; // Rs 15 for both students and non-working Lajna
+          khuddam = 60; // Rs 60 for both students and non-working Lajna
+          ijtema = 15; // Rs 15 for both students and non-working Lajna
         } else {
           // Set string values
           aamString = isMusis ? "Wassiyat" : "Aam";
@@ -738,6 +746,7 @@
             khuddam = Math.ceil((1 / 100) * salary);
             ijtema = Math.ceil((0.0833 / 100) * salary);
           } else {
+            // Khuddam and Lajna calculations
             aam = isMusis ? 
               Math.ceil((10 / 100) * salary) : 
               Math.ceil((6.25 / 100) * salary);
@@ -793,4 +802,83 @@
         const newRow = table.insertRow(table.rows.length - 1);
         const cell1 = newRow.insertCell(0);
         const cell2 = newRow.insertCell(1);
-        cell1.textContent = "Tehrik-e-Jadid
+        cell1.textContent = "Tehrik-e-Jadid";
+        cell2.textContent = tehrik;
+      }
+      
+      if (waqf > 0) {
+        const newRow = table.insertRow(table.rows.length - 1);
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        cell1.textContent = "Waqf-e-Jadid";
+        cell2.textContent = waqf;
+      }
+    }
+
+    function doMonthsCompare(month1, month2) {
+      const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      
+      const index1 = months.indexOf(month1);
+      const index2 = months.indexOf(month2);
+      
+      if (index1 === -1 || index2 === -1) {
+        return false;
+      }
+      
+      return index1 > index2;
+    }
+
+    function saveData(event) {
+      event.preventDefault();
+      
+      const year = document.getElementById("year").value;
+      const month = document.getElementById("month").value;
+      const toYear = document.getElementById("toYear").value;
+      const toMonth = document.getElementById("toMonth").value;
+      const AIMSnumber = document.getElementById("AIMSnumber").value;
+      
+      // Validation
+      if (!year || !month || !toYear || !toMonth || !AIMSnumber) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      
+      if (year > toYear) {
+        alert("The 'Year From' field must not exceed the 'Year To' field.");
+        return;
+      }
+      
+      if (year === toYear && doMonthsCompare(month, toMonth)) {
+        alert("Please ensure that the 'Month From' field is set to a month earlier than the 'Month To' field.");
+        return;
+      }
+      
+      // Save data to local storage
+      localStorage.setItem("monthString", month);
+      localStorage.setItem("yearString", year);
+      localStorage.setItem("toYearString", toYear);
+      localStorage.setItem("toMonthString", toMonth);
+      localStorage.setItem("AIMSnumber", AIMSnumber);
+      
+      // Update UI
+      generateAimsTable({
+        'Aims': AIMSnumber,
+        'From': `${month} ${year}`,
+        'To': `${toMonth} ${toYear}`
+      });
+      
+      alert("Your data has been successfully saved! Now, let's head back to the home page to calculate your chanda.");
+    }
+  </script>
+</body>
+
+<footer class="footer mt-auto py-3 bg-dark">
+  <div class="container">
+    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
+  </div>
+</footer>
+
+</html>
