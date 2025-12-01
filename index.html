@@ -28,7 +28,7 @@
     }
     
     .footer {
-      position: fixed;
+      position: relative;
       left: 0;
       bottom: 0;
       width: 100%;
@@ -191,7 +191,7 @@
                 <option value="">Select Member Group</option>
                 <option value="Khuddam">Khuddam</option>
                 <option value="Lajna">Lajna</option>
-                <option value="Non-working Lajna">Non-working Lajna</option>
+                <option value="Non-earning Lajna">Non-earning Lajna</option>
                 <option value="Ansar">Ansar</option>
                 <option value="Student">Student</option>
               </select>
@@ -345,7 +345,7 @@
             </tbody>
           </table>
           <blockquote class="blockquote">
-            <p><span style="font-size:10px;"><i>Note : Students and non-working members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px;"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 15 for Chanda Ijtama.</i></span></p>
+            <p><span style="font-size:10px;"><i>Note : Students and non-earning members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px;"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 15 for Chanda Ijtama.</i></span></p>
           </blockquote>
         </div>
       </div>
@@ -704,14 +704,22 @@
         // Calculate based on group and type
         let aamString, groupString, aam, jalsa, khuddam, ijtema;
         
-        // Handle non-working members (Student and Non-working Lajna)
-        if (group === "Student" || group === "Non-working Lajna") {
+        // Handle non-earning members (Student and Non-earning Lajna)
+        if (group === "Student" || group === "Non-earning Lajna") {
           aamString = "Aam";
-          groupString = group === "Student" ? "Non-working" : "Non-working Lajna";
+          groupString = group === "Student" ? "Student" : "Non-earning Lajna";
           aam = 0;
           jalsa = 0;
-          khuddam = 60; // Rs 60 for both students and non-working Lajna
-          ijtema = 15; // Rs 15 for both students and non-working Lajna
+          
+          if (group === "Student") {
+            // Student amounts
+            khuddam = 60; // Rs 60 for students
+            ijtema = 15; // Rs 15 for students
+          } else {
+            // Non-earning Lajna amounts
+            khuddam = 65; // Rs 65 for non-earning Lajna
+            ijtema = 30; // Rs 30 for non-earning Lajna
+          }
         } else {
           // Set string values
           aamString = isMusis ? "Wassiyat" : "Aam";
