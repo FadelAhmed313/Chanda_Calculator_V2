@@ -28,7 +28,7 @@
     }
     
     .footer {
-      position: fixed;
+      position: relative;
       left: 0;
       bottom: 0;
       width: 100%;
@@ -181,6 +181,11 @@
             </div>
             
             <div class="form-group">
+              <label for="salary"><strong>Monthly Income (Rs):</strong></label>
+              <input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
+            </div>
+
+            <div class="form-group">
               <label for="memberGroup"><strong>Member Group:</strong></label>
               <select class="form-control" id="memberGroup" name="group" required>
                 <option value="">Select Member Group</option>
@@ -191,15 +196,6 @@
                 <option value="Student">Student</option>
               </select>
             </div>
-
-            <div class="form-group">
-              <label for="salary"><strong>Monthly Income (Rs):</strong></label>
-              <input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
-            </div>
-
-            <button type="button" id="btnCalc" class="btn btn-warning btn-block">
-              Calculate Chanda
-            </button>
           </form>
         </div>
       </div>
@@ -558,8 +554,11 @@
     }
 
     function initEventListeners() {
-      // Calculate button
-      document.getElementById("btnCalc").addEventListener("click", calculate);
+      // Remove calculate button listener
+      // document.getElementById("btnCalc").addEventListener("click", calculate);
+      
+      // Add calculate listener to Member Group dropdown
+      document.getElementById("memberGroup").addEventListener("change", calculate);
       
       // Add row button
       document.getElementById("addRowBtn").addEventListener("click", addRow);
@@ -568,16 +567,15 @@
       document.getElementById("aimsForm").addEventListener("submit", saveData);
       
       // Input change listeners for real-time calculation
-      const inputs = document.querySelectorAll("#salary, #inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
-      inputs.forEach(input => {
+      // Also trigger calculation when salary or musis checkbox changes
+      document.getElementById("salary").addEventListener("input", calculate);
+      document.getElementById("musisCheckbox").addEventListener("change", calculate);
+      
+      // Table input change listeners for real-time calculation
+      const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
+      tableInputs.forEach(input => {
         input.addEventListener("input", calculate);
       });
-      
-      // Member group change listener
-      document.getElementById("memberGroup").addEventListener("change", calculate);
-      
-      // Musis checkbox change listener
-      document.getElementById("musisCheckbox").addEventListener("change", calculate);
     }
 
     function generateAimsTable(data) {
@@ -679,10 +677,11 @@
           totalAdditional += parseFloat(field.value) || 0;
         });
         
-        // Validate inputs
-        if (!group) {
-          // Hide loading spinner
+        // Validate inputs - require group selection and salary
+        if (!group || salary === 0) {
+          // Hide loading spinner and reset values
           document.getElementById('loadingSpinner').style.display = 'none';
+          resetCalculationValues();
           return;
         }
         
@@ -753,6 +752,20 @@
       }, 100);
     }
 
+    function resetCalculationValues() {
+      // Reset all calculation values to defaults
+      document.getElementById("aamString").textContent = "Aam";
+      document.getElementById("aamValue").textContent = "-";
+      document.getElementById("jalsaValue").textContent = "-";
+      document.getElementById("groupString").textContent = "Khuddam";
+      document.getElementById("khuddamValue").textContent = "-";
+      document.getElementById("ijtemaValue").textContent = "-";
+      document.getElementById("tehrikValue").textContent = "-";
+      document.getElementById("waqfValue").textContent = "-";
+      document.getElementById("totalValue").textContent = "-";
+      document.getElementById("finalTotalValue").textContent = "Rs 0";
+    }
+
     function doMonthsCompare(month1, month2) {
       const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -779,44 +792,4 @@
       const AIMSnumber = document.getElementById("AIMSnumber").value;
       
       // Validation
-      if (!year || !month || !toYear || !toMonth || !AIMSnumber) {
-        alert("Please fill in all fields.");
-        return;
-      }
-      
-      if (year > toYear) {
-        alert("The 'Year From' field must not exceed the 'Year To' field.");
-        return;
-      }
-      
-      if (year === toYear && doMonthsCompare(month, toMonth)) {
-        alert("Please ensure that the 'Month From' field is set to a month earlier than the 'Month To' field.");
-        return;
-      }
-      
-      // Save data to local storage
-      localStorage.setItem("monthString", month);
-      localStorage.setItem("yearString", year);
-      localStorage.setItem("toYearString", toYear);
-      localStorage.setItem("toMonthString", toMonth);
-      localStorage.setItem("AIMSnumber", AIMSnumber);
-      
-      // Update UI
-      generateAimsTable({
-        'Aims': AIMSnumber,
-        'From': `${month} ${year}`,
-        'To': `${toMonth} ${toYear}`
-      });
-      
-      alert("Your data has been successfully saved! Now, let's head back to the home page to calculate your chanda.");
-    }
-  </script>
-</body>
-
-<footer class="footer mt-auto py-3 bg-dark">
-  <div class="container">
-    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
-  </div>
-</footer>
-
-</html>
+      if (!year || !month || !toYear || !toMonth || !AIMSnumber)
