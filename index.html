@@ -553,31 +553,43 @@
       }
     }
 
-    function initEventListeners() {
-      // Remove calculate button listener
-      // document.getElementById("btnCalc").addEventListener("click", calculate);
-      
-      // Add calculate listener to Member Group dropdown
-      document.getElementById("memberGroup").addEventListener("change", calculate);
-      
-      // Add row button
-      document.getElementById("addRowBtn").addEventListener("click", addRow);
-      
-      // AIMS form submission
-      document.getElementById("aimsForm").addEventListener("submit", saveData);
-      
-      // Input change listeners for real-time calculation
-      // Also trigger calculation when salary or musis checkbox changes
-      document.getElementById("salary").addEventListener("input", calculate);
-      document.getElementById("musisCheckbox").addEventListener("change", calculate);
-      
-      // Table input change listeners for real-time calculation
-      const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
-      tableInputs.forEach(input => {
-        input.addEventListener("input", calculate);
-      });
-    }
-
+function initEventListeners() {
+  // Add calculate listener to Member Group dropdown
+  const memberGroupSelect = document.getElementById("memberGroup");
+  memberGroupSelect.addEventListener("change", function() {
+    console.log("Member group changed to:", this.value);
+    calculate();
+  });
+  
+  // Add row button
+  document.getElementById("addRowBtn").addEventListener("click", addRow);
+  
+  // AIMS form submission
+  document.getElementById("aimsForm").addEventListener("submit", saveData);
+  
+  // Input change listeners for real-time calculation
+  // Also trigger calculation when salary or musis checkbox changes
+  document.getElementById("salary").addEventListener("input", calculate);
+  document.getElementById("musisCheckbox").addEventListener("change", calculate);
+  
+  // Table input change listeners for real-time calculation
+  const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
+  tableInputs.forEach(input => {
+    input.addEventListener("input", calculate);
+  });
+  
+  // Also add calculation when the page loads if data exists
+  window.addEventListener('load', function() {
+    // Small delay to ensure all elements are loaded
+    setTimeout(function() {
+      const group = document.getElementById("memberGroup").value;
+      if (group) {
+        console.log("Page loaded with group:", group);
+        calculate();
+      }
+    }, 100);
+  });
+}
     function generateAimsTable(data) {
       const tableContainer = document.getElementById("table-container");
       
