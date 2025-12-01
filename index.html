@@ -28,7 +28,7 @@
     }
     
     .footer {
-      position: relative;
+      position: fixed;
       left: 0;
       bottom: 0;
       width: 100%;
@@ -472,6 +472,9 @@
       
       // Initialize event listeners
       initEventListeners();
+      
+      // Trigger initial calculation if data exists
+      triggerInitialCalculation();
     }
 
     function initNavigation() {
@@ -553,43 +556,44 @@
       }
     }
 
-function initEventListeners() {
-  // Add calculate listener to Member Group dropdown
-  const memberGroupSelect = document.getElementById("memberGroup");
-  memberGroupSelect.addEventListener("change", function() {
-    console.log("Member group changed to:", this.value);
-    calculate();
-  });
-  
-  // Add row button
-  document.getElementById("addRowBtn").addEventListener("click", addRow);
-  
-  // AIMS form submission
-  document.getElementById("aimsForm").addEventListener("submit", saveData);
-  
-  // Input change listeners for real-time calculation
-  // Also trigger calculation when salary or musis checkbox changes
-  document.getElementById("salary").addEventListener("input", calculate);
-  document.getElementById("musisCheckbox").addEventListener("change", calculate);
-  
-  // Table input change listeners for real-time calculation
-  const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
-  tableInputs.forEach(input => {
-    input.addEventListener("input", calculate);
-  });
-  
-  // Also add calculation when the page loads if data exists
-  window.addEventListener('load', function() {
-    // Small delay to ensure all elements are loaded
-    setTimeout(function() {
-      const group = document.getElementById("memberGroup").value;
-      if (group) {
-        console.log("Page loaded with group:", group);
+    function initEventListeners() {
+      // Add calculate listener to Member Group dropdown
+      const memberGroupSelect = document.getElementById("memberGroup");
+      memberGroupSelect.addEventListener("change", function() {
+        console.log("Member group changed to:", this.value);
         calculate();
+      });
+      
+      // Add row button
+      document.getElementById("addRowBtn").addEventListener("click", addRow);
+      
+      // AIMS form submission
+      document.getElementById("aimsForm").addEventListener("submit", saveData);
+      
+      // Input change listeners for real-time calculation
+      // Also trigger calculation when salary or musis checkbox changes
+      document.getElementById("salary").addEventListener("input", calculate);
+      document.getElementById("musisCheckbox").addEventListener("change", calculate);
+      
+      // Table input change listeners for real-time calculation
+      const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
+      tableInputs.forEach(input => {
+        input.addEventListener("input", calculate);
+      });
+    }
+
+    function triggerInitialCalculation() {
+      // Check if we have data for calculation
+      const salary = document.getElementById("salary").value;
+      const group = document.getElementById("memberGroup").value;
+      
+      // If member group is selected, trigger calculation
+      if (group) {
+        // Small delay to ensure all elements are loaded
+        setTimeout(calculate, 100);
       }
-    }, 100);
-  });
-}
+    }
+
     function generateAimsTable(data) {
       const tableContainer = document.getElementById("table-container");
       
@@ -689,8 +693,8 @@ function initEventListeners() {
           totalAdditional += parseFloat(field.value) || 0;
         });
         
-        // Validate inputs - require group selection and salary
-        if (!group || salary === 0) {
+        // Validate inputs - require group selection
+        if (!group) {
           // Hide loading spinner and reset values
           document.getElementById('loadingSpinner').style.display = 'none';
           resetCalculationValues();
@@ -712,6 +716,14 @@ function initEventListeners() {
           // Set string values
           aamString = isMusis ? "Wassiyat" : "Aam";
           groupString = group;
+          
+          // For working members, require salary
+          if (salary === 0) {
+            // Hide loading spinner and reset values
+            document.getElementById('loadingSpinner').style.display = 'none';
+            resetCalculationValues();
+            return;
+          }
           
           // Calculate amounts based on group and type
           if (group === "Ansar") {
@@ -741,8 +753,8 @@ function initEventListeners() {
         ijtema += inputIjtema;
         
         // Update Tehrik and Waqf values from input fields
-        const tehrikValue = inputTehrik || '-';
-        const waqfValue = inputWaqf || '-';
+        const tehrikValue = inputTehrik > 0 ? inputTehrik : '-';
+        const waqfValue = inputWaqf > 0 ? inputWaqf : '-';
         
         // Calculate total
         let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
@@ -782,26 +794,3 @@ function initEventListeners() {
       const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
-      ];
-      
-      const index1 = months.indexOf(month1);
-      const index2 = months.indexOf(month2);
-      
-      if (index1 === -1 || index2 === -1) {
-        return false;
-      }
-      
-      return index1 > index2;
-    }
-
-    function saveData(event) {
-      event.preventDefault();
-      
-      const year = document.getElementById("year").value;
-      const month = document.getElementById("month").value;
-      const toYear = document.getElementById("toYear").value;
-      const toMonth = document.getElementById("toMonth").value;
-      const AIMSnumber = document.getElementById("AIMSnumber").value;
-      
-      // Validation
-      if (!year || !month || !toYear || !toMonth || !AIMSnumber)
