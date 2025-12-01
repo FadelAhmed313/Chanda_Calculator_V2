@@ -794,3 +794,66 @@
       const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      
+      const index1 = months.indexOf(month1);
+      const index2 = months.indexOf(month2);
+      
+      if (index1 === -1 || index2 === -1) {
+        return false;
+      }
+      
+      return index1 > index2;
+    }
+
+    function saveData(event) {
+      event.preventDefault();
+      
+      const year = document.getElementById("year").value;
+      const month = document.getElementById("month").value;
+      const toYear = document.getElementById("toYear").value;
+      const toMonth = document.getElementById("toMonth").value;
+      const AIMSnumber = document.getElementById("AIMSnumber").value;
+      
+      // Validation
+      if (!year || !month || !toYear || !toMonth || !AIMSnumber) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      
+      if (year > toYear) {
+        alert("The 'Year From' field must not exceed the 'Year To' field.");
+        return;
+      }
+      
+      if (year === toYear && doMonthsCompare(month, toMonth)) {
+        alert("Please ensure that the 'Month From' field is set to a month earlier than the 'Month To' field.");
+        return;
+      }
+      
+      // Save data to local storage
+      localStorage.setItem("monthString", month);
+      localStorage.setItem("yearString", year);
+      localStorage.setItem("toYearString", toYear);
+      localStorage.setItem("toMonthString", toMonth);
+      localStorage.setItem("AIMSnumber", AIMSnumber);
+      
+      // Update UI
+      generateAimsTable({
+        'Aims': AIMSnumber,
+        'From': `${month} ${year}`,
+        'To': `${toMonth} ${toYear}`
+      });
+      
+      alert("Your data has been successfully saved! Now, let's head back to the home page to calculate your chanda.");
+    }
+  </script>
+</body>
+
+<footer class="footer mt-auto py-3 bg-dark">
+  <div class="container">
+    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
+  </div>
+</footer>
+
+</html>
