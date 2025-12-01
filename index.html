@@ -196,34 +196,6 @@
               <label for="salary"><strong>Monthly Income (Rs):</strong></label>
               <input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
             </div>
-            
-            <div class="form-group">
-              <label><strong>Optional Contributions:</strong></label>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="CheckTehrik">
-                    <label class="form-check-label" for="CheckTehrik">
-                      Tehrik-e-Jadid
-                    </label>
-                    <div class="form-group mt-2">
-                      <input type="number" id="numberInputTehrik" class="Inputcontrol number-input" min="0" placeholder="Amount (Rs)">
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="CheckWaqf">
-                    <label class="form-check-label" for="CheckWaqf">
-                      Waqf-e-Jadid
-                    </label>
-                    <div class="form-group mt-2">
-                      <input type="number" id="numberInputwaqf" class="Inputcontrol number-input" min="0" placeholder="Amount (Rs)">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <button type="button" id="btnCalc" class="btn btn-warning btn-block">
               Calculate Chanda
@@ -266,6 +238,16 @@
                 <td>Ijtema</td>
                 <td id="ijtemaValue">-</td>
                 <td><input type="number" id="inputIjtema" style="width:75%" min="0" value="0"></td>
+              </tr>
+              <tr>
+                <td>Tehrik-e-Jadid</td>
+                <td id="tehrikValue">-</td>
+                <td><input type="number" id="inputTehrik" style="width:75%" min="0" value="0"></td>
+              </tr>
+              <tr>
+                <td>Waqf-e-Jadid</td>
+                <td id="waqfValue">-</td>
+                <td><input type="number" id="inputWaqf" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr>
                 <td style="font-weight: bold;">Total</td>
@@ -528,23 +510,7 @@
     }
 
     function initFormControls() {
-      // Initialize optional input visibility
-      const checkTehrik = document.getElementById("CheckTehrik");
-      const checkWaqf = document.getElementById("CheckWaqf");
-      const numberInputTehrik = document.getElementById("numberInputTehrik");
-      const numberInputWaqf = document.getElementById("numberInputwaqf");
-
-      checkTehrik.addEventListener("change", () => {
-        numberInputTehrik.style.display = checkTehrik.checked ? "block" : "none";
-        if (!checkTehrik.checked) numberInputTehrik.value = "";
-        calculate();
-      });
-
-      checkWaqf.addEventListener("change", () => {
-        numberInputWaqf.style.display = checkWaqf.checked ? "block" : "none";
-        if (!checkWaqf.checked) numberInputWaqf.value = "";
-        calculate();
-      });
+      // No checkbox controls needed now since Tehrik and Waqf are now table rows
     }
 
     function initYearDropdowns() {
@@ -602,7 +568,7 @@
       document.getElementById("aimsForm").addEventListener("submit", saveData);
       
       // Input change listeners for real-time calculation
-      const inputs = document.querySelectorAll("#salary, #inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #numberInputTehrik, #numberInputwaqf");
+      const inputs = document.querySelectorAll("#salary, #inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
       inputs.forEach(input => {
         input.addEventListener("input", calculate);
       });
@@ -699,12 +665,12 @@
         const salary = parseFloat(document.getElementById("salary").value) || 0;
         const isMusis = document.getElementById("musisCheckbox").checked;
         const group = document.getElementById("memberGroup").value;
-        const inputTehrik = parseFloat(document.getElementById("numberInputTehrik").value) || 0;
-        const inputWaqf = parseFloat(document.getElementById("numberInputwaqf").value) || 0;
         const inputAam = parseFloat(document.getElementById("inputAam").value) || 0;
         const inputJalsa = parseFloat(document.getElementById("inputJalsa").value) || 0;
         const inputKhuddam = parseFloat(document.getElementById("inputKhuddam").value) || 0;
         const inputIjtema = parseFloat(document.getElementById("inputIjtema").value) || 0;
+        const inputTehrik = parseFloat(document.getElementById("inputTehrik").value) || 0;
+        const inputWaqf = parseFloat(document.getElementById("inputWaqf").value) || 0;
         
         // Get additional field values
         const additionalFields = document.querySelectorAll(".additionalField");
@@ -763,6 +729,10 @@
         khuddam += inputKhuddam;
         ijtema += inputIjtema;
         
+        // Update Tehrik and Waqf values from input fields
+        const tehrikValue = inputTehrik || '-';
+        const waqfValue = inputWaqf || '-';
+        
         // Calculate total
         let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
         
@@ -773,46 +743,14 @@
         document.getElementById("groupString").textContent = groupString;
         document.getElementById("khuddamValue").textContent = khuddam || '-';
         document.getElementById("ijtemaValue").textContent = ijtema || '-';
+        document.getElementById("tehrikValue").textContent = tehrikValue;
+        document.getElementById("waqfValue").textContent = waqfValue;
         document.getElementById("totalValue").textContent = total || '-';
         document.getElementById("finalTotalValue").textContent = `Rs ${total}`;
-        
-        // Update optional funds table
-        updateOptionalFunds(inputTehrik, inputWaqf);
         
         // Hide loading spinner
         document.getElementById('loadingSpinner').style.display = 'none';
       }, 100);
-    }
-
-    function updateOptionalFunds(tehrik, waqf) {
-      const table = document.getElementById("myTable");
-      const lastRow = table.rows[table.rows.length - 1];
-      
-      // Remove existing optional fund rows
-      const rows = Array.from(table.rows);
-      rows.forEach((row, index) => {
-        if (row.cells[0]?.textContent.includes("Tehrik") || 
-            row.cells[0]?.textContent.includes("Waqf")) {
-          table.deleteRow(index);
-        }
-      });
-      
-      // Add optional fund rows if needed
-      if (tehrik > 0) {
-        const newRow = table.insertRow(table.rows.length - 1);
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        cell1.textContent = "Tehrik-e-Jadid";
-        cell2.textContent = tehrik;
-      }
-      
-      if (waqf > 0) {
-        const newRow = table.insertRow(table.rows.length - 1);
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        cell1.textContent = "Waqf-e-Jadid";
-        cell2.textContent = waqf;
-      }
     }
 
     function doMonthsCompare(month1, month2) {
