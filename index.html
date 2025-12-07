@@ -29,19 +29,19 @@
     
     .footer {
       position: relative;
-        left: 0;
-  bottom: 0;
-  width: 100%;
-  background-color: #343a40;
-  color: white;
-  text-align: center;
-  margin-top: auto;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      margin-top: auto;
     }
     body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
     .page-section {
       display: none;
     }
@@ -120,6 +120,19 @@
       color: #ffc107;
       margin-left: 5px;
       cursor: pointer;
+    }
+    
+    .notes-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ced4da;
+      font-size: 14px;
+    }
+    
+    .aims-title {
+      color: #ffc107;
     }
   </style>
 </head>
@@ -207,10 +220,16 @@
       
       <div class="card mt-4">
         <div class="card-header">
-          <h5 class="mb-0">Chanda Breakdown</h5>
+          <h5 class="mb-0" id="chandaBreakdownTitle">Chanda Breakdown</h5>
         </div>
         <div class="card-body">
-          <div id="table-container"></div>
+          <!-- Notes/Remarks Textarea -->
+          <div class="form-group">
+            <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
+            <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
+            <small class="form-text text-muted">Your notes will be saved automatically when you leave this field.</small>
+          </div>
+          
           <table id="myTable" class="table mt-4">
             <thead>
               <tr>
@@ -367,50 +386,6 @@
               <label for="inputAddress">Aims Number</label>
               <input type="number" class="form-control" id="AIMSnumber" name="number" required>
             </div>
-            <h6>From</h6>
-            <div class="form-group col-md-6">
-              <label for="inputEmail4">Year</label>
-              <select class="form-control" id="year"></select>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="inputPassword4">Month</label>
-              <select class="form-control" id="month" name="month">
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-              </select>
-            </div>
-            <h6>To</h6>
-            <div class="form-group col-md-6">
-              <label for="inputEmail4">Year</label>
-              <select class="form-control" id="toYear"></select>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="inputPassword4">Month</label>
-              <select class="form-control" id="toMonth" name="month">
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-              </select>
-            </div>
             <br>
             <button id="save-button" type="submit" style="width:100%;" class="btn btn-warning">Save</button>
           </form>
@@ -469,9 +444,6 @@
       // Initialize form controls
       initFormControls();
       
-      // Initialize year dropdowns
-      initYearDropdowns();
-      
       // Load saved data
       loadSavedData();
       
@@ -480,6 +452,9 @@
       
       // Trigger initial calculation if data exists
       triggerInitialCalculation();
+      
+      // Update Chanda Breakdown title if AIMS number exists
+      updateChandaBreakdownTitle();
     }
 
     function initNavigation() {
@@ -517,47 +492,19 @@
       // No checkbox controls needed now since Tehrik and Waqf are now table rows
     }
 
-    function initYearDropdowns() {
-      // Initialize year dropdowns
-      const currentYear = new Date().getFullYear();
-      const yearSelect = document.getElementById("year");
-      const toYearSelect = document.getElementById("toYear");
-
-      // Clear existing options
-      yearSelect.innerHTML = '';
-      toYearSelect.innerHTML = '';
-
-      for (let i = 0; i < 3; i++) {
-        const year = currentYear - i;
-        yearSelect.add(new Option(year, year));
-        toYearSelect.add(new Option(year, year));
-      }
-      
-      // Set default values
-      yearSelect.value = currentYear;
-      toYearSelect.value = currentYear;
-    }
-
     function loadSavedData() {
       // Load saved AIMS data
-      const forYear = localStorage.getItem("yearString");
-      const forMonth = localStorage.getItem("monthString");
-      const fortoYear = localStorage.getItem("toYearString");
-      const fortoMonth = localStorage.getItem("toMonthString");
       const getAIMSnumber = localStorage.getItem("AIMSnumber");
-
-      if (forYear && forMonth && fortoYear && fortoMonth && getAIMSnumber) {
+      
+      // Load saved notes
+      const savedNotes = localStorage.getItem("chandaNotes");
+      
+      if (getAIMSnumber) {
         document.getElementById("AIMSnumber").value = getAIMSnumber;
-        document.getElementById("year").value = forYear;
-        document.getElementById("month").value = forMonth;
-        document.getElementById("toYear").value = fortoYear;
-        document.getElementById("toMonth").value = fortoMonth;
-        
-        generateAimsTable({
-          'Aims': getAIMSnumber,
-          'From': `${forMonth} ${forYear}`,
-          'To': `${fortoMonth} ${fortoYear}`
-        });
+      }
+      
+      if (savedNotes) {
+        document.getElementById("notesTextarea").value = savedNotes;
       }
     }
 
@@ -585,6 +532,16 @@
       tableInputs.forEach(input => {
         input.addEventListener("input", calculate);
       });
+      
+      // Notes textarea auto-save on blur
+      const notesTextarea = document.getElementById("notesTextarea");
+      notesTextarea.addEventListener("blur", saveNotes);
+      notesTextarea.addEventListener("keyup", function(event) {
+        if (event.ctrlKey && event.key === 's') {
+          event.preventDefault();
+          saveNotes();
+        }
+      });
     }
 
     function triggerInitialCalculation() {
@@ -599,47 +556,21 @@
       }
     }
 
-    function generateAimsTable(data) {
-      const tableContainer = document.getElementById("table-container");
+    function updateChandaBreakdownTitle() {
+      const aimsNumber = localStorage.getItem("AIMSnumber");
+      const titleElement = document.getElementById("chandaBreakdownTitle");
       
-      // Remove existing table
-      const existingTable = tableContainer.querySelector("table");
-      if (existingTable) {
-        existingTable.remove();
+      if (aimsNumber) {
+        titleElement.innerHTML = `<span class="aims-title">AIMS: ${aimsNumber}</span> - Chanda Breakdown`;
+      } else {
+        titleElement.textContent = "Chanda Breakdown";
       }
-      
-      // Check if 'From' is equal to 'To'
-      const displayTo = (data['From'] !== data['To']);
-      
-      // Create table
-      const table = document.createElement('table');
-      table.className = 'table table-bordered';
-      table.style.cssText = 'width:100%;';
-      
-      // Create header row
-      const headerRow = table.insertRow();
-      for (const key in data) {
-        if (data[key] !== null && !data[key].includes("null")) {
-          const headerText = (key === 'From' && !displayTo) ? 'Month' : key;
-          const headerCell = document.createElement('th');
-          headerCell.textContent = headerText;
-          headerCell.style.cssText = 'text-align: center;font-weight: bold;';
-          headerRow.appendChild(headerCell);
-        }
-      }
-      
-      // Create value row
-      const valueRow = table.insertRow();
-      for (const key in data) {
-        if (data[key] !== null && !data[key].includes("null")) {
-          const valueCell = valueRow.insertCell();
-          valueCell.textContent = data[key];
-          valueCell.style.cssText = 'text-align: center;';
-        }
-      }
-      
-      // Append table to container
-      tableContainer.appendChild(table);
+    }
+
+    function saveNotes() {
+      const notes = document.getElementById("notesTextarea").value;
+      localStorage.setItem("chandaNotes", notes);
+      console.log("Notes saved successfully");
     }
 
     function addRow() {
@@ -803,62 +734,24 @@
       document.getElementById("finalTotalValue").textContent = "Rs 0";
     }
 
-    function doMonthsCompare(month1, month2) {
-      const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-      ];
-      
-      const index1 = months.indexOf(month1);
-      const index2 = months.indexOf(month2);
-      
-      if (index1 === -1 || index2 === -1) {
-        return false;
-      }
-      
-      return index1 > index2;
-    }
-
     function saveData(event) {
       event.preventDefault();
       
-      const year = document.getElementById("year").value;
-      const month = document.getElementById("month").value;
-      const toYear = document.getElementById("toYear").value;
-      const toMonth = document.getElementById("toMonth").value;
       const AIMSnumber = document.getElementById("AIMSnumber").value;
       
       // Validation
-      if (!year || !month || !toYear || !toMonth || !AIMSnumber) {
-        alert("Please fill in all fields.");
-        return;
-      }
-      
-      if (year > toYear) {
-        alert("The 'Year From' field must not exceed the 'Year To' field.");
-        return;
-      }
-      
-      if (year === toYear && doMonthsCompare(month, toMonth)) {
-        alert("Please ensure that the 'Month From' field is set to a month earlier than the 'Month To' field.");
+      if (!AIMSnumber) {
+        alert("Please enter your AIMS number.");
         return;
       }
       
       // Save data to local storage
-      localStorage.setItem("monthString", month);
-      localStorage.setItem("yearString", year);
-      localStorage.setItem("toYearString", toYear);
-      localStorage.setItem("toMonthString", toMonth);
       localStorage.setItem("AIMSnumber", AIMSnumber);
       
-      // Update UI
-      generateAimsTable({
-        'Aims': AIMSnumber,
-        'From': `${month} ${year}`,
-        'To': `${toMonth} ${toYear}`
-      });
+      // Update Chanda Breakdown title
+      updateChandaBreakdownTitle();
       
-      alert("Your data has been successfully saved! Now, let's head back to the home page to calculate your chanda.");
+      alert("Your AIMS number has been successfully saved!");
     }
   </script>
 </body>
