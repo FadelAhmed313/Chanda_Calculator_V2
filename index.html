@@ -124,11 +124,12 @@
     
     .notes-textarea {
       width: 100%;
-      min-height: 100px;
+      min-height: 80px;
       padding: 10px;
       border-radius: 5px;
       border: 1px solid #ced4da;
       font-size: 14px;
+      resize: vertical;
     }
     
     .aims-title {
@@ -223,13 +224,6 @@
           <h5 class="mb-0" id="chandaBreakdownTitle">Chanda Breakdown</h5>
         </div>
         <div class="card-body">
-          <!-- Notes/Remarks Textarea -->
-          <div class="form-group">
-            <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
-            <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
-            <small class="form-text text-muted">Your notes will be saved automatically when you leave this field.</small>
-          </div>
-          
           <table id="myTable" class="table mt-4">
             <thead>
               <tr>
@@ -283,7 +277,12 @@
           
           <div class="calculation-result">
             <h5>Monthly Chanda Total: <span class="total-amount" id="finalTotalValue">Rs 0</span></h5>
-            <p class="text-muted mb-0">This is your estimated monthly Chanda contribution based on the provided information.</p>
+            <!-- Notes/Remarks Textarea -->
+            <div class="form-group mt-3">
+              <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
+              <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
+              <small class="form-text text-muted">Your notes will be saved automatically when you leave this field.</small>
+            </div>
           </div>
         </div>
       </div>
