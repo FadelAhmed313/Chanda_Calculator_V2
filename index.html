@@ -142,6 +142,20 @@
       margin-top: 5px;
       display: none;
     }
+    
+    .success-message {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1002;
+      display: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 
@@ -156,6 +170,11 @@
     <div class="spinner-border text-warning" role="status">
       <span class="sr-only">Loading...</span>
     </div>
+  </div>
+  
+  <!-- Success Message -->
+  <div id="successMessage" class="success-message">
+    Settings saved successfully!
   </div>
 
   <!-- Navbar -->
@@ -267,7 +286,6 @@
             <div class="form-group mt-3">
               <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
               <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
-              <small class="form-text text-muted">Your notes will be saved automatically when you leave this field.</small>
             </div>
           </div>
         </div>
@@ -635,6 +653,16 @@
       console.log("Notes saved successfully");
     }
 
+    function showSuccessMessage() {
+      const successMessage = document.getElementById("successMessage");
+      successMessage.style.display = "block";
+      
+      // Hide the message after 5 seconds
+      setTimeout(function() {
+        successMessage.style.display = "none";
+      }, 5000);
+    }
+
     function addRow() {
       const table = document.getElementById("myTable");
       const newRow = table.insertRow(table.rows.length - 1);
@@ -805,35 +833,4 @@
       
       // Validation - Member Group is required
       if (!memberGroup) {
-        alert("Please select a Member Group.");
-        return;
-      }
-      
-      // Save data to local storage
-      if (AIMSnumber) {
-        localStorage.setItem("AIMSnumber", AIMSnumber);
-      }
-      localStorage.setItem("isMusis", isMusis);
-      localStorage.setItem("memberGroup", memberGroup);
-      
-      // Update Chanda Breakdown title
-      updateChandaBreakdownTitle();
-      
-      // Navigate to home page
-      showPage("home");
-      
-      // Update home page UI
-      checkMemberGroupForHome();
-      
-      // Trigger calculation if salary is already entered
-      const salary = document.getElementById("salary").value;
-      if (salary) {
-        calculate();
-      }
-      
-      alert("Settings saved successfully!");
-    }
-  </script>
-</body>
-
-<footer class="footer mt-auto py-3 bg-dark
+        alert("Please select a Member Group
