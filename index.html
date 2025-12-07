@@ -833,4 +833,42 @@
       
       // Validation - Member Group is required
       if (!memberGroup) {
-        alert("Please select a Member Group
+        alert("Please select a Member Group.");
+        return;
+      }
+      
+      // Save data to local storage
+      if (AIMSnumber) {
+        localStorage.setItem("AIMSnumber", AIMSnumber);
+      }
+      localStorage.setItem("isMusis", isMusis);
+      localStorage.setItem("memberGroup", memberGroup);
+      
+      // Update Chanda Breakdown title
+      updateChandaBreakdownTitle();
+      
+      // Show success message
+      showSuccessMessage();
+      
+      // Navigate to home page
+      showPage("home");
+      
+      // Update home page UI
+      checkMemberGroupForHome();
+      
+      // Trigger calculation if salary is already entered
+      const salary = document.getElementById("salary").value;
+      if (salary) {
+        calculate();
+      }
+    }
+  </script>
+</body>
+
+<footer class="footer mt-auto py-3 bg-dark">
+  <div class="container">
+    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
+  </div>
+</footer>
+
+</html>
