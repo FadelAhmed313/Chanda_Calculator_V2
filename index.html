@@ -135,6 +135,13 @@
     .aims-title {
       color: #ffc107;
     }
+    
+    .error-message {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
   </style>
 </head>
 
@@ -181,7 +188,7 @@
   <!-- Page Content -->
   <div class="container mt-4">
     <!-- Home Page -->
-    <div id="home" class="page-section active">
+    <div id="home" class="page-section">
       <h2 class="section-title">Chanda Calculator</h2>
       <div class="card">
         <div class="card-header">
@@ -190,30 +197,9 @@
         <div class="card-body">
           <form id="salaryForm">
             <div class="form-group">
-              <label for="fundType"><strong>Member Type:</strong></label>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
-                <label class="form-check-label" for="musisCheckbox">
-                  Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i>
-                </label>
-              </div>
-            </div>
-            
-            <div class="form-group">
               <label for="salary"><strong>Monthly Income (Rs):</strong></label>
               <input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
-            </div>
-
-            <div class="form-group">
-              <label for="memberGroup"><strong>Member Group:</strong></label>
-              <select class="form-control" id="memberGroup" name="group" required>
-                <option value="">Select Member Group</option>
-                <option value="Khuddam">Khuddam</option>
-                <option value="Lajna">Lajna</option>
-                <option value="Non-earning Lajna">Non-earning Lajna</option>
-                <option value="Ansar">Ansar</option>
-                <option value="Student">Student</option>
-              </select>
+              <div id="salaryError" class="error-message">Please set your Member Group in Settings first</div>
             </div>
           </form>
         </div>
@@ -378,15 +364,40 @@
     <div id="aims" class="page-section">
       <div class="card">
         <div class="card-body">
-          <h2 class="section-title">AIMS</h2>
-          <form id="aimsForm">
-            <!-- Text field for number AIMS-->
+          <h2 class="section-title">Settings</h2>
+          <form id="settingsForm">
+            <!-- AIMS Number -->
             <div class="form-group">
-              <label for="inputAddress">Aims Number</label>
-              <input type="number" class="form-control" id="AIMSnumber" name="number" required>
+              <label for="AIMSnumber">Aims Number</label>
+              <input type="number" class="form-control" id="AIMSnumber" name="number">
             </div>
+            
+            <!-- Member Type -->
+            <div class="form-group">
+              <label><strong>Member Type:</strong></label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
+                <label class="form-check-label" for="musisCheckbox">
+                  Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i>
+                </label>
+              </div>
+            </div>
+            
+            <!-- Member Group -->
+            <div class="form-group">
+              <label for="memberGroup"><strong>Member Group:</strong></label>
+              <select class="form-control" id="memberGroup" name="group" required>
+                <option value="">Select Member Group</option>
+                <option value="Khuddam">Khuddam</option>
+                <option value="Lajna">Lajna</option>
+                <option value="Non-earning Lajna">Non-earning Lajna</option>
+                <option value="Ansar">Ansar</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+            
             <br>
-            <button id="save-button" type="submit" style="width:100%;" class="btn btn-warning">Save</button>
+            <button id="saveSettings" type="submit" style="width:100%;" class="btn btn-warning">Save Settings</button>
           </form>
           <div class="container mt-4">
             <div id="errorMessages" class="mt-3 text-danger"></div>
@@ -437,28 +448,31 @@
     });
 
     function initApp() {
+      // Load saved data first
+      loadSavedData();
+      
       // Initialize page navigation
       initNavigation();
       
       // Initialize form controls
       initFormControls();
       
-      // Load saved data
-      loadSavedData();
-      
       // Initialize event listeners
       initEventListeners();
       
-      // Trigger initial calculation if data exists
-      triggerInitialCalculation();
-      
-      // Update Chanda Breakdown title if AIMS number exists
-      updateChandaBreakdownTitle();
+      // Check if member group is set, if not go to settings
+      checkMemberGroup();
     }
 
     function initNavigation() {
       const pages = ["home", "about", "privacy", "rate", "aims"];
-      const defaultPage = "home";
+      let defaultPage = "home";
+
+      // Check if member group is set
+      const savedGroup = localStorage.getItem("memberGroup");
+      if (!savedGroup) {
+        defaultPage = "aims";
+      }
 
       function showPage(page) {
         pages.forEach((p) => {
@@ -473,6 +487,14 @@
             link.classList.add('active');
           }
         });
+        
+        // Update URL hash
+        window.location.hash = page;
+        
+        // Update UI based on current page
+        if (page === "home") {
+          checkMemberGroupForHome();
+        }
       }
 
       // Initial page load
@@ -482,8 +504,50 @@
       // Listen for hash changes
       window.addEventListener("hashchange", function() {
         const currentPage = window.location.hash.substr(1);
-        showPage(currentPage);
-        document.getElementById("navbar").click();
+        if (pages.includes(currentPage)) {
+          showPage(currentPage);
+          document.getElementById("navbar").click();
+        }
+      });
+    }
+
+    function checkMemberGroup() {
+      const savedGroup = localStorage.getItem("memberGroup");
+      if (!savedGroup) {
+        // If no member group is set, show settings page
+        showPage("aims");
+      }
+    }
+
+    function checkMemberGroupForHome() {
+      const savedGroup = localStorage.getItem("memberGroup");
+      const salaryInput = document.getElementById("salary");
+      const salaryError = document.getElementById("salaryError");
+      
+      if (!savedGroup) {
+        salaryInput.disabled = true;
+        salaryInput.placeholder = "Please set Member Group in Settings first";
+        salaryError.style.display = "block";
+      } else {
+        salaryInput.disabled = false;
+        salaryInput.placeholder = "Enter your monthly income";
+        salaryError.style.display = "none";
+      }
+    }
+
+    function showPage(page) {
+      const pages = ["home", "about", "privacy", "rate", "aims"];
+      pages.forEach((p) => {
+        document.getElementById(p).classList.remove("active");
+      });
+      document.getElementById(page).classList.add("active");
+      
+      // Update active nav link
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${page}`) {
+          link.classList.add('active');
+        }
       });
     }
 
@@ -498,6 +562,12 @@
       // Load saved notes
       const savedNotes = localStorage.getItem("chandaNotes");
       
+      // Load saved member type
+      const savedMusis = localStorage.getItem("isMusis");
+      
+      // Load saved member group
+      const savedGroup = localStorage.getItem("memberGroup");
+      
       if (getAIMSnumber) {
         document.getElementById("AIMSnumber").value = getAIMSnumber;
       }
@@ -505,26 +575,31 @@
       if (savedNotes) {
         document.getElementById("notesTextarea").value = savedNotes;
       }
+      
+      if (savedMusis === "true") {
+        document.getElementById("musisCheckbox").checked = true;
+      }
+      
+      if (savedGroup) {
+        document.getElementById("memberGroup").value = savedGroup;
+      }
     }
 
     function initEventListeners() {
-      // Add calculate listener to Member Group dropdown
+      // Add calculate listener to Member Group dropdown (in settings)
       const memberGroupSelect = document.getElementById("memberGroup");
       memberGroupSelect.addEventListener("change", function() {
         console.log("Member group changed to:", this.value);
-        calculate();
       });
       
       // Add row button
       document.getElementById("addRowBtn").addEventListener("click", addRow);
       
-      // AIMS form submission
-      document.getElementById("aimsForm").addEventListener("submit", saveData);
+      // Settings form submission
+      document.getElementById("settingsForm").addEventListener("submit", saveSettings);
       
       // Input change listeners for real-time calculation
-      // Also trigger calculation when salary or musis checkbox changes
       document.getElementById("salary").addEventListener("input", calculate);
-      document.getElementById("musisCheckbox").addEventListener("change", calculate);
       
       // Table input change listeners for real-time calculation
       const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
@@ -541,18 +616,6 @@
           saveNotes();
         }
       });
-    }
-
-    function triggerInitialCalculation() {
-      // Check if we have data for calculation
-      const salary = document.getElementById("salary").value;
-      const group = document.getElementById("memberGroup").value;
-      
-      // If member group is selected, trigger calculation
-      if (group) {
-        // Small delay to ensure all elements are loaded
-        setTimeout(calculate, 100);
-      }
     }
 
     function updateChandaBreakdownTitle() {
@@ -612,8 +675,8 @@
       setTimeout(() => {
         // Get form values
         const salary = parseFloat(document.getElementById("salary").value) || 0;
-        const isMusis = document.getElementById("musisCheckbox").checked;
-        const group = document.getElementById("memberGroup").value;
+        const isMusis = localStorage.getItem("isMusis") === "true";
+        const group = localStorage.getItem("memberGroup");
         const inputAam = parseFloat(document.getElementById("inputAam").value) || 0;
         const inputJalsa = parseFloat(document.getElementById("inputJalsa").value) || 0;
         const inputKhuddam = parseFloat(document.getElementById("inputKhuddam").value) || 0;
@@ -733,32 +796,44 @@
       document.getElementById("finalTotalValue").textContent = "Rs 0";
     }
 
-    function saveData(event) {
+    function saveSettings(event) {
       event.preventDefault();
       
       const AIMSnumber = document.getElementById("AIMSnumber").value;
+      const isMusis = document.getElementById("musisCheckbox").checked;
+      const memberGroup = document.getElementById("memberGroup").value;
       
-      // Validation
-      if (!AIMSnumber) {
-        alert("Please enter your AIMS number.");
+      // Validation - Member Group is required
+      if (!memberGroup) {
+        alert("Please select a Member Group.");
         return;
       }
       
       // Save data to local storage
-      localStorage.setItem("AIMSnumber", AIMSnumber);
+      if (AIMSnumber) {
+        localStorage.setItem("AIMSnumber", AIMSnumber);
+      }
+      localStorage.setItem("isMusis", isMusis);
+      localStorage.setItem("memberGroup", memberGroup);
       
       // Update Chanda Breakdown title
       updateChandaBreakdownTitle();
       
-      alert("Your AIMS number has been successfully saved!");
+      // Navigate to home page
+      showPage("home");
+      
+      // Update home page UI
+      checkMemberGroupForHome();
+      
+      // Trigger calculation if salary is already entered
+      const salary = document.getElementById("salary").value;
+      if (salary) {
+        calculate();
+      }
+      
+      alert("Settings saved successfully!");
     }
   </script>
 </body>
 
-<footer class="footer mt-auto py-3 bg-dark">
-  <div class="container">
-    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
-  </div>
-</footer>
-
-</html>
+<footer class="footer mt-auto py-3 bg-dark
