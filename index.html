@@ -126,7 +126,7 @@
     }
     
     .aims-title {
-      color: #28a745;
+      color: #ffc107;
       font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 10px;
@@ -171,30 +171,6 @@
       font-size: 0.9rem;
       color: #6c757d;
       margin-top: 5px;
-      font-weight: bold;
-    }
-    
-    .capture-container {
-      margin-top: 20px;
-      text-align: center;
-    }
-    
-    .capture-btn {
-      margin-top: 10px;
-    }
-    
-    /* Hidden elements for capture */
-    .hide-on-capture {
-      display: table-cell;
-    }
-    
-    @media print {
-      .no-print, .hide-on-capture {
-        display: none !important;
-      }
-      .print-only {
-        display: block !important;
-      }
     }
   </style>
 </head>
@@ -280,45 +256,45 @@
               <tr>
                 <th>Funds</th>
                 <th>Amount (Rs)</th>
-                <th style="width:30%" class="hide-on-capture">Roundoff</th>
+                <th style="width:30%">Roundoff</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td id="aamString">Aam</td>
                 <td id="aamValue">-</td>
-                <td class="hide-on-capture"><input type="number" id="inputAam" style="width:75%" min="0" value="0"></td>
+                <td><input type="number" id="inputAam" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr>
                 <td>Jalsa</td>
                 <td id="jalsaValue">-</td>
-                <td class="hide-on-capture"><input type="number" id="inputJalsa" style="width:75%" min="0" value="0"></td>
+                <td><input type="number" id="inputJalsa" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr>
                 <td id="groupString">Khuddam</td>
                 <td id="khuddamValue">-</td>
-                <td class="hide-on-capture"><input type="number" id="inputKhuddam" style="width:75%" min="0" value="0"></td>
+                <td><input type="number" id="inputKhuddam" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr>
                 <td>Ijtema</td>
                 <td id="ijtemaValue">-</td>
-                <td class="hide-on-capture"><input type="number" id="inputIjtema" style="width:75%" min="0" value="0"></td>
+                <td><input type="number" id="inputIjtema" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr>
                 <td>Tehrik-e-Jadid</td>
                 <td id="tehrikValue">-</td>
-                <td class="hide-on-capture"><input type="number" id="inputTehrik" style="width:75%" min="0" value="0"></td>
+                <td><input type="number" id="inputTehrik" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr>
                 <td>Waqf-e-Jadid</td>
                 <td id="waqfValue">-</td>
-                <td class="hide-on-capture"><input type="number" id="inputWaqf" style="width:75%" min="0" value="0"></td>
+                <td><input type="number" id="inputWaqf" style="width:75%" min="0" value="0"></td>
               </tr>
               <tr class="total-row">
                 <td style="font-weight: bold;">Total</td>
                 <td style="font-weight: bold;" id="totalValue">-</td>
-                <td class="hide-on-capture" style="font-weight: bold;" id="additionalFund">
-                  <button id="addRowBtn" type="button" class="btn btn-warning btn-sm no-print">
+                <td style="font-weight: bold;" id="additionalFund">
+                  <button id="addRowBtn" type="button" class="btn btn-warning btn-sm">
                     Add Fund
                   </button>
                 </td>
@@ -330,14 +306,6 @@
           <div class="form-group mt-4">
             <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
             <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
-          </div>
-          
-          <!-- Capture Button -->
-          <div class="capture-container">
-            <button id="captureBtn" type="button" class="btn btn-success btn-lg capture-btn">
-              <i class="fas fa-camera"></i> Capture Chanda Breakdown
-            </button>
-            <p class="text-muted mt-2">This will create a clean version without roundoff columns for sharing or printing.</p>
           </div>
         </div>
       </div>
@@ -798,9 +766,6 @@
           saveNotes();
         }
       });
-      
-      // Capture button event listener
-      document.getElementById("captureBtn").addEventListener("click", captureChandaBreakdown);
     }
 
     function updateAimsDisplay() {
@@ -863,278 +828,6 @@
       }, 5000);
     }
 
-    function captureChandaBreakdown() {
-      // Create a new window for the captured content
-      const captureWindow = window.open('', '_blank');
-      
-      // Get current data
-      const aimsNumber = localStorage.getItem("AIMSnumber");
-      const fromMonth = localStorage.getItem("fromMonth");
-      const fromYear = localStorage.getItem("fromYear");
-      const toMonth = localStorage.getItem("toMonth");
-      const toYear = localStorage.getItem("toYear");
-      const notes = document.getElementById("notesTextarea").value;
-      const salary = document.getElementById("salary").value;
-      const isMusis = localStorage.getItem("isMusis") === "true";
-      const memberGroup = localStorage.getItem("memberGroup");
-      
-      // Get table values
-      const aamString = document.getElementById("aamString").textContent;
-      const aamValue = document.getElementById("aamValue").textContent;
-      const jalsaValue = document.getElementById("jalsaValue").textContent;
-      const groupString = document.getElementById("groupString").textContent;
-      const khuddamValue = document.getElementById("khuddamValue").textContent;
-      const ijtemaValue = document.getElementById("ijtemaValue").textContent;
-      const tehrikValue = document.getElementById("tehrikValue").textContent;
-      const waqfValue = document.getElementById("waqfValue").textContent;
-      const totalValue = document.getElementById("totalValue").textContent;
-      
-      // Determine date range display
-      let dateRangeText = '';
-      if (fromMonth && fromYear) {
-        if (toMonth && toYear) {
-          if (fromMonth === toMonth && fromYear === toYear) {
-            dateRangeText = `For: ${fromMonth} ${fromYear}`;
-          } else {
-            dateRangeText = `From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}`;
-          }
-        } else {
-          dateRangeText = `For: ${fromMonth} ${fromYear}`;
-        }
-      } else {
-        const currentDate = new Date();
-        const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
-        const currentYear = currentDate.getFullYear();
-        dateRangeText = `For: ${currentMonth} ${currentYear}`;
-      }
-      
-      // Create HTML for captured content
-      const captureHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Chanda Breakdown - Capture</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 20px;
-              max-width: 800px;
-              margin: 0 auto;
-            }
-            .header {
-              text-align: center;
-              margin-bottom: 30px;
-              border-bottom: 2px solid #333;
-              padding-bottom: 15px;
-            }
-            .title {
-              color: #343a40;
-              font-size: 24px;
-              margin-bottom: 10px;
-            }
-            .aims-info {
-              background-color: #f8f9fa;
-              padding: 15px;
-              border-radius: 5px;
-              margin-bottom: 20px;
-              border-left: 4px solid #28a745;
-            }
-            .aims-title {
-              color: #28a745;
-              font-size: 18px;
-              font-weight: bold;
-              margin-bottom: 5px;
-            }
-            .date-range {
-              font-size: 14px;
-              color: #6c757d;
-              font-weight: bold;
-            }
-            .member-info {
-              background-color: #e9ecef;
-              padding: 15px;
-              border-radius: 5px;
-              margin-bottom: 20px;
-            }
-            .table-container {
-              margin: 20px 0;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-bottom: 20px;
-            }
-            th {
-              background-color: #343a40;
-              color: white;
-              padding: 12px;
-              text-align: left;
-            }
-            td {
-              padding: 10px;
-              border-bottom: 1px solid #dee2e6;
-            }
-            tr.total-row td {
-              font-weight: bold;
-              background-color: #f8f9fa;
-            }
-            .notes-section {
-              margin-top: 30px;
-              padding: 15px;
-              background-color: #f8f9fa;
-              border-radius: 5px;
-            }
-            .notes-label {
-              font-weight: bold;
-              margin-bottom: 10px;
-              color: #343a40;
-            }
-            .notes-content {
-              white-space: pre-wrap;
-              margin-top: 10px;
-            }
-            .footer {
-              text-align: center;
-              margin-top: 30px;
-              color: #6c757d;
-              font-size: 12px;
-              border-top: 1px solid #dee2e6;
-              padding-top: 15px;
-            }
-            @media print {
-              .no-print { display: none; }
-              body { padding: 0; }
-            }
-            .print-btn {
-              background-color: #28a745;
-              color: white;
-              border: none;
-              padding: 10px 20px;
-              border-radius: 5px;
-              cursor: pointer;
-              margin: 20px 0;
-            }
-            .print-btn:hover {
-              background-color: #218838;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1 class="title">Chanda Breakdown</h1>
-            <p>Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-          </div>
-          
-          ${aimsNumber ? `
-          <div class="aims-info">
-            <div class="aims-title">AIMS: ${aimsNumber}</div>
-            <div class="date-range">${dateRangeText}</div>
-          </div>
-          ` : ''}
-          
-          <div class="member-info">
-            <p><strong>Member Group:</strong> ${memberGroup || 'Not set'}</p>
-            <p><strong>Member Type:</strong> ${isMusis ? 'Musis (Wassiyat)' : 'Regular (Aam)'}</p>
-            <p><strong>Monthly Income:</strong> Rs ${salary || '0'}</p>
-          </div>
-          
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Funds</th>
-                  <th>Amount (Rs)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>${aamString}</td>
-                  <td>${aamValue}</td>
-                </tr>
-                <tr>
-                  <td>Jalsa</td>
-                  <td>${jalsaValue}</td>
-                </tr>
-                <tr>
-                  <td>${groupString}</td>
-                  <td>${khuddamValue}</td>
-                </tr>
-                <tr>
-                  <td>Ijtema</td>
-                  <td>${ijtemaValue}</td>
-                </tr>
-                <tr>
-                  <td>Tehrik-e-Jadid</td>
-                  <td>${tehrikValue}</td>
-                </tr>
-                <tr>
-                  <td>Waqf-e-Jadid</td>
-                  <td>${waqfValue}</td>
-                </tr>
-                <tr class="total-row">
-                  <td><strong>Total</strong></td>
-                  <td><strong>${totalValue}</strong></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-          ${notes ? `
-          <div class="notes-section">
-            <div class="notes-label">Notes/Remarks:</div>
-            <div class="notes-content">${notes}</div>
-          </div>
-          ` : ''}
-          
-          <div class="no-print" style="text-align: center; margin-top: 30px;">
-            <button class="print-btn" onclick="window.print()">
-              <i class="fas fa-print"></i> Print this Breakdown
-            </button>
-            <p>You can also use Ctrl+P to print this page</p>
-          </div>
-          
-          <div class="footer">
-            <p>Generated by Chanda Calculator</p>
-            <p>This is a calculated estimate. Please verify with official sources.</p>
-          </div>
-          
-          <script>
-            // Add print functionality
-            document.addEventListener('DOMContentLoaded', function() {
-              const printBtn = document.querySelector('.print-btn');
-              if (printBtn) {
-                printBtn.addEventListener('click', function() {
-                  window.print();
-                });
-              }
-              
-              // Auto-focus on print button for accessibility
-              if (printBtn) {
-                printBtn.focus();
-              }
-            });
-          </script>
-        </body>
-        </html>
-      `;
-      
-      // Write the HTML to the new window
-      captureWindow.document.write(captureHTML);
-      captureWindow.document.close();
-      
-      // Show a success message
-      showSuccessMessage();
-      
-      // Change message text for capture
-      const successMsg = document.getElementById("successMessage");
-      successMsg.textContent = "Chanda breakdown captured! Opening in new window...";
-      successMsg.style.display = "block";
-      setTimeout(function() {
-        successMsg.style.display = "none";
-        successMsg.textContent = "Settings saved successfully!";
-      }, 3000);
-    }
-
     function addRow() {
       const table = document.getElementById("myTable");
       const newRow = table.insertRow(table.rows.length - 1);
@@ -1155,7 +848,7 @@
       amountInput.type = "number";
       amountInput.style.width = "75%";
       amountInput.min = "0";
-      amountInput.className = "additionalField form-control hide-on-capture";
+      amountInput.className = "additionalField form-control";
       amountInput.value = "0";
       amountInput.addEventListener("input", calculate);
       
@@ -1165,7 +858,6 @@
       
       // Empty cell for alignment
       inputCell.innerHTML = "&nbsp;";
-      inputCell.className = "hide-on-capture";
     }
 
     function calculate() {
