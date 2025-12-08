@@ -7,6 +7,8 @@
   <title>Chanda Calculator</title>
   <!-- Include Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Include html2canvas library -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     .number-input {
       display: none;
@@ -126,7 +128,7 @@
     }
     
     .aims-title {
-      color: #28a745; /* Changed from #ffc107 to #28a745 */
+      color: #28a745;
       font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 10px;
@@ -171,7 +173,7 @@
       font-size: 0.9rem;
       color: #6c757d;
       margin-top: 5px;
-      font-weight: bold; /* Added font-weight: bold */
+      font-weight: bold;
     }
     
     /* New styles for capture functionality */
@@ -190,6 +192,7 @@
       border: 1px solid #ced4da;
       border-radius: 5px;
       margin-top: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .capture-table {
@@ -221,28 +224,51 @@
       border-color: #28a745;
     }
     
-    @media print {
-      .navbar, .footer, .capture-container button, 
-      #captureOutput button, #captureBtn {
-        display: none !important;
-      }
-      
+    /* Print styles removed since we're using image capture */
+    
+    /* Image download styles */
+    #imageDownload {
+      display: none;
+    }
+    
+    .capture-preview {
+      max-width: 100%;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .save-buttons {
+      margin-top: 20px;
+    }
+    
+    /* Image quality message */
+    .image-quality-message {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+      text-align: center;
+    }
+    
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
       .capture-output {
-        display: block !important;
-        border: none;
-        box-shadow: none;
+        padding: 15px;
       }
       
-      body {
-        background-color: white !important;
+      .capture-table th,
+      .capture-table td {
+        padding: 6px;
       }
       
-      .page-section.active {
-        display: block !important;
+      .capture-total {
+        font-size: 1.1rem;
       }
       
-      #home {
-        display: none !important;
+      .btn-lg {
+        padding: 10px 16px;
+        font-size: 16px;
       }
     }
   </style>
@@ -264,6 +290,11 @@
   <!-- Success Message -->
   <div id="successMessage" class="success-message">
     Settings saved successfully!
+  </div>
+  
+  <!-- Image Save Success Message -->
+  <div id="imageSuccessMessage" class="success-message" style="background-color: #007bff;">
+    Image saved successfully!
   </div>
 
   <!-- Navbar -->
@@ -420,16 +451,27 @@
                 </div>
               </div>
               
+              <!-- Image Preview -->
+              <img id="capturePreview" class="capture-preview" alt="Chanda Breakdown Preview">
+              
+              <!-- Image quality message -->
+              <div class="image-quality-message">
+                Long press the image below to save to your gallery
+              </div>
+              
               <!-- Action Buttons -->
-              <div class="mt-4 text-center">
-                <button id="printCaptureBtn" class="btn btn-warning mr-2">
-                  <i class="fas fa-print"></i> Print
+              <div class="mt-4 text-center save-buttons">
+                <button id="saveImageBtn" class="btn btn-warning mr-2">
+                  <i class="fas fa-save"></i> Save as Image
                 </button>
-                <button id="downloadCaptureBtn" class="btn btn-primary">
-                  <i class="fas fa-download"></i> Download as PDF
+                <button id="shareImageBtn" class="btn btn-primary">
+                  <i class="fas fa-share-alt"></i> Share Image
                 </button>
               </div>
             </div>
+            
+            <!-- Hidden link for download -->
+            <a id="imageDownload" download="Chanda_Breakdown.png"></a>
           </div>
         </div>
       </div>
@@ -894,11 +936,11 @@
       // Capture button
       document.getElementById("captureBtn").addEventListener("click", generateCapture);
       
-      // Print button in capture output
-      document.getElementById("printCaptureBtn").addEventListener("click", printCapture);
+      // Save Image button
+      document.getElementById("saveImageBtn").addEventListener("click", saveAsImage);
       
-      // Download PDF button
-      document.getElementById("downloadCaptureBtn").addEventListener("click", downloadAsPDF);
+      // Share Image button
+      document.getElementById("shareImageBtn").addEventListener("click", shareImage);
     }
 
     function updateAimsDisplay() {
@@ -953,11 +995,21 @@
 
     function showSuccessMessage() {
       const successMessage = document.getElementById("successMessage");
-      successMessage.style.display = "block";
+      successMessage.style.display = 'block';
       
       // Hide the message after 5 seconds
       setTimeout(function() {
-        successMessage.style.display = "none";
+        successMessage.style.display = 'none';
+      }, 5000);
+    }
+
+    function showImageSuccessMessage() {
+      const imageSuccessMessage = document.getElementById("imageSuccessMessage");
+      imageSuccessMessage.style.display = 'block';
+      
+      // Hide the message after 5 seconds
+      setTimeout(function() {
+        imageSuccessMessage.style.display = 'none';
       }, 5000);
     }
 
@@ -1201,7 +1253,6 @@
     // Capture functionality
     function generateCapture() {
       // Get all necessary data
-      const salary = document.getElementById("salary").value || "0";
       const isMusis = localStorage.getItem("isMusis") === "true";
       const memberGroup = localStorage.getItem("memberGroup") || "-";
       const aimsNumber = localStorage.getItem("AIMSnumber");
@@ -1304,26 +1355,94 @@
       
       // Scroll to capture output
       document.getElementById("captureOutput").scrollIntoView({ behavior: 'smooth' });
+      
+      // Generate and show preview image
+      generateImagePreview();
     }
 
-    function printCapture() {
-      const captureContent = document.getElementById("captureOutput").innerHTML;
-      const originalContent = document.body.innerHTML;
+    function generateImagePreview() {
+      const captureOutput = document.getElementById("captureOutput");
       
-      document.body.innerHTML = `
-        <div class="container mt-4">
-          ${captureContent}
-        </div>
-      `;
+      // Show loading
+      document.getElementById('loadingSpinner').style.display = 'block';
       
-      window.print();
-      document.body.innerHTML = originalContent;
-      window.location.reload(); // Reload to restore functionality
+      html2canvas(captureOutput, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Better quality for mobile
+        useCORS: true,
+        logging: false,
+        width: captureOutput.offsetWidth,
+        height: captureOutput.offsetHeight
+      }).then(canvas => {
+        // Convert canvas to data URL
+        const imageData = canvas.toDataURL('image/png');
+        
+        // Show preview
+        const preview = document.getElementById("capturePreview");
+        preview.src = imageData;
+        preview.style.display = 'block';
+        
+        // Hide loading
+        document.getElementById('loadingSpinner').style.display = 'none';
+      }).catch(error => {
+        console.error('Error generating image:', error);
+        document.getElementById('loadingSpinner').style.display = 'none';
+        alert('Error generating image. Please try again.');
+      });
     }
 
-    function downloadAsPDF() {
-      // Trigger print dialog for PDF saving
-      window.print();
+    function saveAsImage() {
+      const preview = document.getElementById("capturePreview");
+      
+      if (!preview.src || preview.src === '') {
+        alert('Please generate the capture first by clicking "Capture Chanda Breakdown"');
+        return;
+      }
+      
+      // Create a temporary link element
+      const link = document.getElementById("imageDownload");
+      link.href = preview.src;
+      link.download = `Chanda_${localStorage.getItem("memberGroup") || "Breakdown"}_${new Date().toISOString().slice(0,10)}.png`;
+      
+      // Trigger download
+      link.click();
+      
+      // Show success message
+      showImageSuccessMessage();
+    }
+
+    function shareImage() {
+      const preview = document.getElementById("capturePreview");
+      
+      if (!preview.src || preview.src === '') {
+        alert('Please generate the capture first by clicking "Capture Chanda Breakdown"');
+        return;
+      }
+      
+      // Check if Web Share API is available
+      if (navigator.share) {
+        // Convert data URL to blob
+        fetch(preview.src)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], `Chanda_${localStorage.getItem("memberGroup") || "Breakdown"}.png`, { type: 'image/png' });
+            
+            // Share the file
+            navigator.share({
+              files: [file],
+              title: 'Chanda Breakdown',
+              text: 'My Chanda calculation breakdown'
+            }).catch(error => {
+              console.log('Sharing failed:', error);
+              // Fallback to download
+              saveAsImage();
+            });
+          });
+      } else {
+        // Fallback for browsers without Web Share API
+        alert('Sharing not supported on this device. The image has been downloaded instead.');
+        saveAsImage();
+      }
     }
   </script>
 </body>
