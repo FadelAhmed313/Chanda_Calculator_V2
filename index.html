@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chanda Calculator</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     .footer {
       position: relative;
@@ -22,6 +21,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      padding-bottom: 60px;
     }
     
     .page-section {
@@ -163,28 +163,125 @@
       border-color: #28a745;
     }
     
+    .btn-info {
+      background-color: #17a2b8;
+      border-color: #17a2b8;
+    }
+    
     #imageDownload {
       display: none;
+    }
+    
+    .instruction-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    .instruction-content {
+      background-color: white;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .highlight-box {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+    }
+    
+    .step-number {
+      display: inline-block;
+      background-color: #28a745;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+      .instruction-content {
+        margin: 20px auto;
+        padding: 20px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Offline Indicator -->
   <div id="offlineIndicator" class="offline-indicator">
     <span>Offline Mode</span>
   </div>
   
+  <!-- Loading Spinner -->
   <div id="loadingSpinner" class="loading-spinner">
     <div class="spinner-border text-warning" role="status">
       <span class="sr-only">Loading...</span>
     </div>
   </div>
   
+  <!-- Success Message -->
   <div id="successMessage" class="success-message">
     Settings saved successfully!
   </div>
   
-  <div id="imageSuccessMessage" class="success-message" style="background-color: #007bff;">
-    Image saved successfully!
+  <!-- Instruction Modal -->
+  <div id="instructionModal" class="instruction-modal">
+    <div class="instruction-content">
+      <h3 class="text-center mb-4">📸 How to Save Your Chanda Breakdown</h3>
+      
+      <div class="highlight-box">
+        <h5><span class="step-number">1</span> Prepare the Screen</h5>
+        <p>Make sure all your Chanda calculations are visible on the screen.</p>
+      </div>
+      
+      <div class="highlight-box">
+        <h5><span class="step-number">2</span> Take Screenshot</h5>
+        <p><strong>For Android:</strong></p>
+        <ul>
+          <li>Press <strong>Power + Volume Down</strong> buttons together</li>
+          <li>Or <strong>swipe down with three fingers</strong> (on some devices)</li>
+        </ul>
+        
+        <p><strong>For iPhone:</strong></p>
+        <ul>
+          <li>Press <strong>Side button + Volume Up</strong></li>
+          <li>For older iPhones: <strong>Home + Power</strong></li>
+        </ul>
+      </div>
+      
+      <div class="highlight-box">
+        <h5><span class="step-number">3</span> Find & Share</h5>
+        <ul>
+          <li>Screenshot saves to your <strong>Photos/Gallery</strong></li>
+          <li>Open the screenshot</li>
+          <li>Tap <strong>Share</strong> button</li>
+          <li>Choose app (WhatsApp, Email, etc.)</li>
+        </ul>
+      </div>
+      
+      <div class="text-center mt-4">
+        <button onclick="closeInstructionModal()" class="btn btn-warning btn-lg" style="min-width: 150px;">
+          Got It!
+        </button>
+      </div>
+    </div>
   </div>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -302,14 +399,19 @@
             <div class="row">
               <div class="col-md-6 mb-2">
                 <button id="saveImageBtn" class="btn btn-success btn-lg btn-block">
-                  <i class="fas fa-save"></i> Save as Image
+                  <i class="fas fa-camera"></i> Save Screenshot
                 </button>
               </div>
               <div class="col-md-6 mb-2">
-                <button id="shareImageBtn" class="btn btn-primary btn-lg btn-block">
-                  <i class="fas fa-share-alt"></i> Share Image
+                <button id="shareImageBtn" class="btn btn-info btn-lg btn-block">
+                  <i class="fas fa-share-alt"></i> Share Screenshot
                 </button>
               </div>
+            </div>
+            <div class="text-center mt-3">
+              <small class="text-muted">
+                <i class="fas fa-info-circle"></i> Both buttons will show you how to take and share a screenshot
+              </small>
             </div>
           </div>
         </div>
@@ -500,8 +602,10 @@
     </div>
   </div>
 
+  <!-- Hidden link for download -->
   <a id="imageDownload" download="Chanda_Breakdown.png"></a>
 
+  <!-- Include Bootstrap JS and jQuery -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -745,16 +849,16 @@
         notesTextarea.addEventListener("blur", saveNotes);
       }
       
-      // Save image button
+      // Save screenshot button - NEW: Shows instructions
       const saveImageBtn = document.getElementById("saveImageBtn");
       if (saveImageBtn) {
-        saveImageBtn.addEventListener("click", saveAsImage);
+        saveImageBtn.addEventListener("click", showInstructionModal);
       }
       
-      // Share image button
+      // Share screenshot button - NEW: Shows instructions
       const shareImageBtn = document.getElementById("shareImageBtn");
       if (shareImageBtn) {
-        shareImageBtn.addEventListener("click", shareImage);
+        shareImageBtn.addEventListener("click", showInstructionModal);
       }
     }
 
@@ -817,13 +921,17 @@
       }
     }
 
-    function showImageSuccessMessage() {
-      const imageSuccessMessage = document.getElementById("imageSuccessMessage");
-      if (imageSuccessMessage) {
-        imageSuccessMessage.style.display = 'block';
-        setTimeout(function() {
-          imageSuccessMessage.style.display = 'none';
-        }, 5000);
+    function showInstructionModal() {
+      const instructionModal = document.getElementById("instructionModal");
+      if (instructionModal) {
+        instructionModal.style.display = 'block';
+      }
+    }
+
+    function closeInstructionModal() {
+      const instructionModal = document.getElementById("instructionModal");
+      if (instructionModal) {
+        instructionModal.style.display = 'none';
       }
     }
 
@@ -1054,254 +1162,20 @@
       }
     }
 
-    function createCleanCapture() {
-      const captureDiv = document.createElement("div");
-      captureDiv.style.backgroundColor = "white";
-      captureDiv.style.padding = "20px";
-      captureDiv.style.borderRadius = "5px";
-      captureDiv.style.maxWidth = "600px";
-      captureDiv.style.margin = "0 auto";
-      captureDiv.style.fontFamily = "Arial, sans-serif";
-      
-      const memberGroup = localStorage.getItem("memberGroup") || "-";
-      const aimsNumber = localStorage.getItem("AIMSnumber");
-      const fromMonth = localStorage.getItem("fromMonth");
-      const fromYear = localStorage.getItem("fromYear");
-      const toMonth = localStorage.getItem("toMonth");
-      const toYear = localStorage.getItem("toYear");
-      const notesTextarea = document.getElementById("notesTextarea");
-      const notes = notesTextarea ? notesTextarea.value : "";
-      
-      // AIMS display
-      let aimsHTML = '';
-      if (aimsNumber) {
-        aimsHTML += `<div style="background-color:#f8f9fa;padding:10px 15px;border-radius:5px;margin-bottom:15px;border-left:4px solid #ffc107;">`;
-        aimsHTML += `<span style="color:#28a745;font-size:1.2rem;font-weight:bold;margin-bottom:10px;display:block">AIMS: ${aimsNumber}</span>`;
-        
-        // Date range
-        if (fromMonth && fromYear) {
-          if (toMonth && toYear) {
-            if (fromMonth === toMonth && fromYear === toYear) {
-              aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">For: ${fromMonth} ${fromYear}</div>`;
-            } else {
-              aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}</div>`;
-            }
-          } else {
-            aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">For: ${fromMonth} ${fromYear}</div>`;
-          }
-        } else {
-          // Current date if no date range is set
-          const currentDate = new Date();
-          const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
-          const currentYear = currentDate.getFullYear();
-          aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">For: ${currentMonth} ${currentYear}</div>`;
-        }
-        aimsHTML += '</div>';
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const instructionModal = document.getElementById("instructionModal");
+      if (event.target == instructionModal) {
+        instructionModal.style.display = "none";
       }
-      
-      let tableHTML = '';
-      let totalAmount = 0;
-      
-      // Get all table rows (including additional funds)
-      const tableRows = document.querySelectorAll("#myTable tbody tr");
-      tableRows.forEach((row, index) => {
-        // Skip the total row
-        if (index === tableRows.length - 1) return;
-        
-        let fundName = '';
-        let amount = '';
-        
-        const firstCell = row.cells[0];
-        const secondCell = row.cells[1];
-        
-        if (!firstCell || !secondCell) return;
-        
-        // Get fund name
-        const fundInput = firstCell.querySelector('input');
-        if (fundInput) {
-          fundName = fundInput.value.trim();
-        } else {
-          fundName = firstCell.textContent.trim();
-        }
-        
-        // Get amount
-        const amountInput = secondCell.querySelector('input');
-        if (amountInput) {
-          amount = amountInput.value;
-          if (amount && parseFloat(amount) > 0) {
-            const amountValue = parseFloat(amount) || 0;
-            totalAmount += amountValue;
-            amount = amountValue.toLocaleString();
-          }
-        } else {
-          amount = secondCell.textContent;
-          if (amount !== '-') {
-            const amountValue = parseFloat(amount.replace(/,/g, '')) || 0;
-            totalAmount += amountValue;
-          }
-        }
-        
-        // Include if valid
-        if (fundName && amount && amount !== '-' && amount !== '0') {
-          tableHTML += `<tr><td style="padding:8px;border-bottom:1px solid #dee2e6">${fundName}</td><td style="padding:8px;border-bottom:1px solid #dee2e6">${amount}</td></tr>`;
-        }
-      });
-      
-      const table = `
-        <table style="width:100%;margin-bottom:15px;border-collapse:collapse">
-          <thead>
-            <tr>
-              <th style="background-color:#343a40;color:white;padding:10px;text-align:left">Funds</th>
-              <th style="background-color:#343a40;color:white;padding:10px;text-align:left">Amount (Rs)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="2" style="text-align:center;font-weight:bold;background-color:#f8f9fa;padding:15px;font-size:1.2rem">
-                Chanda ${memberGroup} Breakdown
-              </td>
-            </tr>
-            ${tableHTML}
-          </tbody>
-        </table>
-      `;
-      
-      const totalHTML = `
-        <div style="text-align:right">
-          <div style="font-weight:bold;color:#28a745;font-size:1.2rem">Total : Rs ${totalAmount.toLocaleString()}</div>
-        </div>
-      `;
-      
-      const notesHTML = `
-        <div style="margin-top:20px">
-          <strong>Notes:</strong>
-          <div style="margin-top:10px;padding:10px;background-color:#f8f9fa;border-radius:5px;min-height:50px">
-            ${notes.trim() ? notes.replace(/\n/g, '<br>') : '<i>No notes added</i>'}
-          </div>
-        </div>
-      `;
-      
-      captureDiv.innerHTML = aimsHTML + table + totalHTML + notesHTML;
-      return captureDiv;
     }
 
-    function saveAsImage() {
-      const loadingSpinner = document.getElementById('loadingSpinner');
-      if (loadingSpinner) {
-        loadingSpinner.style.display = 'block';
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeInstructionModal();
       }
-      
-      setTimeout(() => {
-        const captureDiv = createCleanCapture();
-        document.body.appendChild(captureDiv);
-        
-        // Force reflow
-        captureDiv.offsetHeight;
-        
-        html2canvas(captureDiv, {
-          backgroundColor: '#ffffff',
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          width: captureDiv.offsetWidth,
-          height: captureDiv.offsetHeight,
-          onclone: function(clonedDoc, element) {
-            element.style.display = 'block';
-            element.style.visibility = 'visible';
-            element.style.opacity = '1';
-          }
-        }).then(canvas => {
-          const imageData = canvas.toDataURL('image/png');
-          const downloadLink = document.getElementById("imageDownload");
-          if (downloadLink) {
-            downloadLink.href = imageData;
-            const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
-            const dateStr = new Date().toISOString().slice(0,10);
-            downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
-            downloadLink.click();
-          }
-          
-          document.body.removeChild(captureDiv);
-          if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-          }
-          showImageSuccessMessage();
-        }).catch(error => {
-          console.error('Error generating image:', error);
-          if (captureDiv && captureDiv.parentNode) {
-            document.body.removeChild(captureDiv);
-          }
-          if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-          }
-          alert('Error generating image. Please try again.');
-        });
-      }, 100);
-    }
-
-    function shareImage() {
-      if (!navigator.share) {
-        alert('Sharing is not supported on this device/browser. Using download instead.');
-        saveAsImage();
-        return;
-      }
-      
-      const loadingSpinner = document.getElementById('loadingSpinner');
-      if (loadingSpinner) {
-        loadingSpinner.style.display = 'block';
-      }
-      
-      setTimeout(() => {
-        const captureDiv = createCleanCapture();
-        document.body.appendChild(captureDiv);
-        
-        // Force reflow
-        captureDiv.offsetHeight;
-        
-        html2canvas(captureDiv, {
-          backgroundColor: '#ffffff',
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          width: captureDiv.offsetWidth,
-          height: captureDiv.offsetHeight,
-          onclone: function(clonedDoc, element) {
-            element.style.display = 'block';
-            element.style.visibility = 'visible';
-            element.style.opacity = '1';
-          }
-        }).then(canvas => {
-          canvas.toBlob(blob => {
-            const file = new File([blob], `Chanda_${localStorage.getItem("memberGroup") || "Breakdown"}.png`, { type: 'image/png' });
-            
-            navigator.share({
-              files: [file],
-              title: 'Chanda Breakdown',
-              text: 'My Chanda calculation breakdown'
-            }).then(() => {
-              console.log('Shared successfully');
-            }).catch(error => {
-              console.log('Sharing failed:', error);
-              saveAsImage();
-            }).finally(() => {
-              document.body.removeChild(captureDiv);
-              if (loadingSpinner) {
-                loadingSpinner.style.display = 'none';
-              }
-            });
-          });
-        }).catch(error => {
-          console.error('Error generating image:', error);
-          if (captureDiv && captureDiv.parentNode) {
-            document.body.removeChild(captureDiv);
-          }
-          if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-          }
-          alert('Error generating image. Please try again.');
-        });
-      }, 100);
-    }
+    });
   </script>
 </body>
 <footer class="footer mt-auto py-3 bg-dark">
