@@ -166,6 +166,12 @@
       margin-bottom: 15px;
       border-left: 4px solid #ffc107;
     }
+    
+    .date-range-display {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-top: 5px;
+    }
   </style>
 </head>
 
@@ -242,6 +248,7 @@
           <!-- AIMS Display -->
           <div id="aimsDisplay" class="aims-display" style="display: none;">
             <span class="aims-title" id="aimsDisplayText"></span>
+            <div id="dateRangeDisplay" class="date-range-display"></div>
           </div>
           
           <table id="myTable" class="table mt-4">
@@ -426,6 +433,64 @@
               </select>
             </div>
             
+            <!-- Date Range Section -->
+            <div class="form-group">
+              <label><strong>Date Range:</strong></label>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>From Month:</label>
+                  <select class="form-control" id="fromMonth">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>From Year:</label>
+                  <select class="form-control" id="fromYear">
+                    <!-- Will be populated by JavaScript -->
+                  </select>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <label>To Month (Optional):</label>
+                  <select class="form-control" id="toMonth">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>To Year (Optional):</label>
+                  <select class="form-control" id="toYear">
+                    <!-- Will be populated by JavaScript -->
+                  </select>
+                </div>
+              </div>
+              <small class="form-text text-muted">If "To" date is not set, only the "From" month will be displayed.</small>
+            </div>
+            
             <br>
             <button id="saveSettings" type="submit" style="width:100%;" class="btn btn-warning">Save Settings</button>
           </form>
@@ -490,6 +555,9 @@
       // Initialize event listeners
       initEventListeners();
       
+      // Initialize year dropdowns
+      initYearDropdowns();
+      
       // Check if member group is set, if not go to settings
       checkMemberGroup();
       
@@ -542,6 +610,33 @@
           document.getElementById("navbar").click();
         }
       });
+    }
+
+    function initYearDropdowns() {
+      const currentYear = new Date().getFullYear();
+      const fromYearSelect = document.getElementById("fromYear");
+      const toYearSelect = document.getElementById("toYear");
+      
+      // Clear existing options
+      fromYearSelect.innerHTML = '';
+      toYearSelect.innerHTML = '';
+      
+      // Add options for current year and previous year
+      for (let year = currentYear; year >= currentYear - 1; year--) {
+        const option1 = document.createElement("option");
+        option1.value = year;
+        option1.textContent = year;
+        fromYearSelect.appendChild(option1);
+        
+        const option2 = document.createElement("option");
+        option2.value = year;
+        option2.textContent = year;
+        toYearSelect.appendChild(option2);
+      }
+      
+      // Set default to current year
+      fromYearSelect.value = currentYear;
+      toYearSelect.value = currentYear;
     }
 
     function checkMemberGroup() {
@@ -601,6 +696,12 @@
       // Load saved member group
       const savedGroup = localStorage.getItem("memberGroup");
       
+      // Load saved date range
+      const savedFromMonth = localStorage.getItem("fromMonth");
+      const savedFromYear = localStorage.getItem("fromYear");
+      const savedToMonth = localStorage.getItem("toMonth");
+      const savedToYear = localStorage.getItem("toYear");
+      
       if (getAIMSnumber) {
         document.getElementById("AIMSnumber").value = getAIMSnumber;
       }
@@ -615,6 +716,22 @@
       
       if (savedGroup) {
         document.getElementById("memberGroup").value = savedGroup;
+      }
+      
+      if (savedFromMonth) {
+        document.getElementById("fromMonth").value = savedFromMonth;
+      }
+      
+      if (savedFromYear) {
+        document.getElementById("fromYear").value = savedFromYear;
+      }
+      
+      if (savedToMonth) {
+        document.getElementById("toMonth").value = savedToMonth;
+      }
+      
+      if (savedToYear) {
+        document.getElementById("toYear").value = savedToYear;
       }
     }
 
@@ -653,12 +770,43 @@
 
     function updateAimsDisplay() {
       const aimsNumber = localStorage.getItem("AIMSnumber");
+      const fromMonth = localStorage.getItem("fromMonth");
+      const fromYear = localStorage.getItem("fromYear");
+      const toMonth = localStorage.getItem("toMonth");
+      const toYear = localStorage.getItem("toYear");
+      
       const aimsDisplay = document.getElementById("aimsDisplay");
       const aimsDisplayText = document.getElementById("aimsDisplayText");
+      const dateRangeDisplay = document.getElementById("dateRangeDisplay");
       
       if (aimsNumber) {
         aimsDisplayText.textContent = `AIMS: ${aimsNumber}`;
         aimsDisplay.style.display = "block";
+        
+        // Display date range
+        let dateRangeText = '';
+        const currentDate = new Date();
+        const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+        const currentYear = currentDate.getFullYear();
+        
+        if (fromMonth && fromYear) {
+          if (toMonth && toYear) {
+            // Display range "From X to Y"
+            if (fromMonth === toMonth && fromYear === toYear) {
+              dateRangeText = `For: ${fromMonth} ${fromYear}`;
+            } else {
+              dateRangeText = `From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}`;
+            }
+          } else {
+            // Display only "For X"
+            dateRangeText = `For: ${fromMonth} ${fromYear}`;
+          }
+        } else {
+          // Default to current month/year
+          dateRangeText = `For: ${currentMonth} ${currentYear}`;
+        }
+        
+        dateRangeDisplay.textContent = dateRangeText;
       } else {
         aimsDisplay.style.display = "none";
       }
@@ -845,6 +993,10 @@
       const AIMSnumber = document.getElementById("AIMSnumber").value;
       const isMusis = document.getElementById("musisCheckbox").checked;
       const memberGroup = document.getElementById("memberGroup").value;
+      const fromMonth = document.getElementById("fromMonth").value;
+      const fromYear = document.getElementById("fromYear").value;
+      const toMonth = document.getElementById("toMonth").value;
+      const toYear = document.getElementById("toYear").value;
       
       // Validation - Member Group is required
       if (!memberGroup) {
@@ -852,12 +1004,47 @@
         return;
       }
       
+      // Validation - From date is required if AIMS number is provided
+      if (AIMSnumber && (!fromMonth || !fromYear)) {
+        alert("Please select at least the 'From' month and year when entering an AIMS number.");
+        return;
+      }
+      
+      // Validation - If To date is provided, it should be after or equal to From date
+      if (toMonth && toYear && fromMonth && fromYear) {
+        const months = ["January", "February", "March", "April", "May", "June", 
+                       "July", "August", "September", "October", "November", "December"];
+        const fromMonthIndex = months.indexOf(fromMonth);
+        const toMonthIndex = months.indexOf(toMonth);
+        
+        if (toYear < fromYear || (toYear === fromYear && toMonthIndex < fromMonthIndex)) {
+          alert("'To' date should be after or equal to 'From' date.");
+          return;
+        }
+      }
+      
       // Save data to local storage
       if (AIMSnumber) {
         localStorage.setItem("AIMSnumber", AIMSnumber);
+      } else {
+        localStorage.removeItem("AIMSnumber");
       }
+      
       localStorage.setItem("isMusis", isMusis);
       localStorage.setItem("memberGroup", memberGroup);
+      
+      if (fromMonth) {
+        localStorage.setItem("fromMonth", fromMonth);
+      }
+      if (fromYear) {
+        localStorage.setItem("fromYear", fromYear);
+      }
+      if (toMonth) {
+        localStorage.setItem("toMonth", toMonth);
+      }
+      if (toYear) {
+        localStorage.setItem("toYear", toYear);
+      }
       
       // Update AIMS display
       updateAimsDisplay();
