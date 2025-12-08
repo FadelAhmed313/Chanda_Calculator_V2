@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chanda Calculator</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- Include html2canvas from CDN -->
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     .footer {
@@ -23,7 +22,6 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding-bottom: 60px;
     }
     
     .page-section {
@@ -165,219 +163,28 @@
       border-color: #28a745;
     }
     
-    .btn-info {
-      background-color: #17a2b8;
-      border-color: #17a2b8;
-    }
-    
     #imageDownload {
       display: none;
-    }
-    
-    .image-preview-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 9999;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow-y: auto;
-    }
-    
-    .image-preview-content {
-      background-color: white;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      text-align: center;
-    }
-    
-    .preview-image {
-      max-width: 100%;
-      height: auto;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin: 20px 0;
-    }
-    
-    .save-instructions {
-      background-color: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 15px;
-      margin: 20px 0;
-      border-radius: 5px;
-      text-align: left;
-    }
-    
-    .instruction-step {
-      margin: 10px 0;
-      padding-left: 25px;
-      position: relative;
-    }
-    
-    .instruction-step:before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: #28a745;
-      font-weight: bold;
-    }
-    
-    @media (max-width: 768px) {
-      .image-preview-content {
-        margin: 10px auto;
-        padding: 15px;
-      }
-    }
-    
-    /* Print styles for better image printing */
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      .printable-image, .printable-image * {
-        visibility: visible;
-      }
-      .printable-image {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-      .no-print {
-        display: none !important;
-      }
-    }
-    
-    .printable-image {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: 0 auto;
-      font-family: Arial, sans-serif;
-    }
-    
-    .print-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-    
-    .print-table th {
-      background-color: #343a40;
-      color: white;
-      padding: 12px;
-      text-align: left;
-    }
-    
-    .print-table td {
-      padding: 10px;
-      border-bottom: 1px solid #dee2e6;
-    }
-    
-    .print-total {
-      font-weight: bold;
-      color: #28a745;
-      font-size: 1.3rem;
-      text-align: right;
-      margin-top: 20px;
-      padding-top: 10px;
-      border-top: 2px solid #28a745;
     }
   </style>
 </head>
 <body>
-  <!-- Offline Indicator -->
   <div id="offlineIndicator" class="offline-indicator">
     <span>Offline Mode</span>
   </div>
   
-  <!-- Loading Spinner -->
   <div id="loadingSpinner" class="loading-spinner">
     <div class="spinner-border text-warning" role="status">
       <span class="sr-only">Loading...</span>
     </div>
   </div>
   
-  <!-- Success Message -->
   <div id="successMessage" class="success-message">
     Settings saved successfully!
   </div>
   
-  <!-- Image Success Message -->
   <div id="imageSuccessMessage" class="success-message" style="background-color: #007bff;">
-    Image generated successfully! Check the preview.
-  </div>
-  
-  <!-- Image Preview Modal -->
-  <div id="imagePreviewModal" class="image-preview-modal">
-    <div class="image-preview-content">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">📋 Chanda Breakdown</h3>
-        <button onclick="closeImagePreview()" class="btn btn-danger btn-sm">
-          <i class="fas fa-times"></i> Close
-        </button>
-      </div>
-      
-      <div id="imagePreviewContainer" class="printable-image">
-        <!-- Image will be generated here -->
-      </div>
-      
-      <div class="save-instructions">
-        <h5><i class="fas fa-download"></i> How to Save & Share:</h5>
-        
-        <div class="instruction-step">
-          <strong>Method 1: Take Screenshot (Easiest)</strong><br>
-          Press <kbd>Power</kbd> + <kbd>Volume Down</kbd> buttons together
-        </div>
-        
-        <div class="instruction-step">
-          <strong>Method 2: Save Image</strong><br>
-          Long press the image above → "Save image" or "Download image"
-        </div>
-        
-        <div class="instruction-step">
-          <strong>Method 3: Print to PDF</strong><br>
-          Click "Print" button below → Choose "Save as PDF"
-        </div>
-        
-        <div class="instruction-step">
-          <strong>Method 4: Share Directly</strong><br>
-          Click "Share" button below (if supported by your device)
-        </div>
-      </div>
-      
-      <div class="row mt-4">
-        <div class="col-md-4 mb-2">
-          <button onclick="printImage()" class="btn btn-warning btn-block">
-            <i class="fas fa-print"></i> Print
-          </button>
-        </div>
-        <div class="col-md-4 mb-2">
-          <button onclick="downloadImage()" class="btn btn-success btn-block">
-            <i class="fas fa-download"></i> Download
-          </button>
-        </div>
-        <div class="col-md-4 mb-2">
-          <button onclick="shareImage()" class="btn btn-info btn-block">
-            <i class="fas fa-share-alt"></i> Share
-          </button>
-        </div>
-      </div>
-      
-      <div class="mt-3">
-        <small class="text-muted">
-          <i class="fas fa-lightbulb"></i> Tip: The image is also saved to your browser cache. You can find it in your downloads folder.
-        </small>
-      </div>
-    </div>
+    Image saved successfully!
   </div>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -494,44 +301,213 @@
           <div class="capture-container">
             <div class="row">
               <div class="col-md-6 mb-2">
-                <button id="generateImageBtn" class="btn btn-success btn-lg btn-block">
-                  <i class="fas fa-camera"></i> Generate Image
+                <button id="saveImageBtn" class="btn btn-success btn-lg btn-block">
+                  <i class="fas fa-save"></i> Save as Image
                 </button>
               </div>
               <div class="col-md-6 mb-2">
-                <button id="quickSaveBtn" class="btn btn-info btn-lg btn-block">
-                  <i class="fas fa-bolt"></i> Quick Save
+                <button id="shareImageBtn" class="btn btn-primary btn-lg btn-block">
+                  <i class="fas fa-share-alt"></i> Share Image
                 </button>
               </div>
-            </div>
-            <div class="text-center mt-3">
-              <small class="text-muted">
-                <i class="fas fa-info-circle"></i> "Generate Image" creates a clean printable version. "Quick Save" downloads directly.
-              </small>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Other pages remain exactly the same -->
-    <!-- ... (About, Privacy, Rate, AIMS pages unchanged) ... -->
+    <!-- About Page -->
+    <div id="about" class="page-section">
+      <h2 class="section-title">About</h2>
+      <div class="card">
+        <div class="card-body">
+          <h4>About</h4>
+          <p class="text-muted">The Chanda Calculator is a user-friendly web application designed by MKA Pailles to assist the Ahmadi community members in calculating their Chanda payments accurately. Whether you're a Khuddam, Lajna, or part of the Wassiyat scheme, this tool simplifies the process and ensures transparency.</p>
+        </div>
+      </div>
+    </div>
 
+    <!-- Privacy Page -->
+    <div id="privacy" class="page-section">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="section-title">Privacy and Security</h2>
+          <h4>Privacy and Security</h4>
+          <ul style="list-style-type:square; color:#6c757d;">
+            <li><span style="color:#6c757d;">The Chanda Calculator operates entirely on your local web browser. No data is stored or transmitted to external servers.</span></li>
+            <li><span style="color:#6c757d;">Your privacy is our priority. Once you close the browser, all entered information is automatically cleared.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate Page -->
+    <div id="rate" class="page-section">
+      <h2 class="section-title">% Rate</h2>
+      <div class="card">
+        <div class="card-body">
+          <h4>% Rate</h4>
+          <table class="table table-striped" style="margin-right: calc(1%); width: 99%;">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col" style="width: 6.2232%;"><span style="font-size: 12px;">#</span></th>
+                <th scope="col" style="width: 6.6023%;"><span style="font-size: 12px;">%</span></th>
+                <th scope="col" style="width: 15.017%;"><span style="font-size: 12px;">Funds</span></th>
+                <th scope="col" style="width: 72.1042%;"><span style="font-size: 12px;">Example</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">1</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">10%</span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Wassiyat Khuddam, Lajna and Ansar</span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid <span style="color: rgb(226, 80, 65);">monthly</span></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">2</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">6.25%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Aam Khuddam, Lajna and Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs625 should be paid <span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">3</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">10%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Jalsa Khuddam, Lajna and Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs 83.33 per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">4</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">1%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Khuddam, Lajna and Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs100 should be paid&nbsp;<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">5</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">3%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Khuddam and Lajna<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs300 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs25 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
+              </tr>
+              <tr>
+                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">6</span></th>
+                <td style="width: 6.6023%;"><span style="font-size: 12px;">0.08%<br></span></td>
+                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Ansar<br></span></td>
+                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs108 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs9 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <blockquote class="blockquote">
+            <p><span style="font-size:10px;"><i>Note : Students and non-earning members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px;"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 15 for Chanda Ijtama.</i></span></p>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <!-- AIMS Page -->
+    <div id="aims" class="page-section">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="section-title">Settings</h2>
+          <form id="settingsForm">
+            <div class="form-group">
+              <label for="AIMSnumber">Aims Number</label>
+              <input type="number" class="form-control" id="AIMSnumber" name="number">
+            </div>
+            
+            <div class="form-group">
+              <label><strong>Member Type:</strong></label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
+                <label class="form-check-label" for="musisCheckbox">
+                  Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i>
+                </label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="memberGroup"><strong>Member Group:</strong></label>
+              <select class="form-control" id="memberGroup" name="group" required>
+                <option value="">Select Member Group</option>
+                <option value="Khuddam">Khuddam</option>
+                <option value="Lajna">Lajna</option>
+                <option value="Non-earning Lajna">Non-earning Lajna</option>
+                <option value="Ansar">Ansar</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label><strong>Date Range:</strong></label>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>From Month:</label>
+                  <select class="form-control" id="fromMonth">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>From Year:</label>
+                  <select class="form-control" id="fromYear"></select>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <label>To Month (Optional):</label>
+                  <select class="form-control" id="toMonth">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>To Year (Optional):</label>
+                  <select class="form-control" id="toYear"></select>
+                </div>
+              </div>
+              <small class="form-text text-muted">If no date is selected, current month and year will be displayed.</small>
+            </div>
+            
+            <br>
+            <button id="saveSettings" type="submit" style="width:100%;" class="btn btn-warning">Save Settings</button>
+          </form>
+          <div class="container mt-4">
+            <div id="errorMessages" class="mt-3 text-danger"></div>
+            <div id="successMessages" class="mt-3 text-success"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Hidden link for download -->
   <a id="imageDownload" download="Chanda_Breakdown.png"></a>
 
-  <!-- Include Bootstrap JS and jQuery -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
   <script>
-    // Store the latest generated image data URL
-    let latestImageDataUrl = null;
-    
     // Initialize the application
     document.addEventListener("DOMContentLoaded", function() {
       initApp();
@@ -546,7 +522,6 @@
       updateAimsDisplay();
     }
 
-    // Navigation functions remain the same
     function initNavigation() {
       const pages = ["home", "about", "privacy", "rate", "aims"];
       let defaultPage = "home";
@@ -556,6 +531,7 @@
       }
 
       function showPage(page) {
+        // Hide all pages
         pages.forEach((p) => {
           const pageElement = document.getElementById(p);
           if (pageElement) {
@@ -563,11 +539,13 @@
           }
         });
         
+        // Show the requested page
         const activePage = document.getElementById(page);
         if (activePage) {
           activePage.classList.add("active");
         }
         
+        // Update active nav link
         document.querySelectorAll('.nav-link').forEach(link => {
           link.classList.remove('active');
           if (link.getAttribute('href') === `#${page}`) {
@@ -577,11 +555,13 @@
         
         window.location.hash = page;
         
+        // Update UI based on current page
         if (page === "home") {
           checkMemberGroupForHome();
         }
       }
 
+      // Handle initial page load
       const initialPage = window.location.hash ? window.location.hash.substr(1) : defaultPage;
       if (pages.includes(initialPage)) {
         showPage(initialPage);
@@ -589,10 +569,12 @@
         showPage(defaultPage);
       }
 
+      // Handle hash changes
       window.addEventListener("hashchange", function() {
         const currentPage = window.location.hash.substr(1);
         if (pages.includes(currentPage)) {
           showPage(currentPage);
+          // Close mobile navbar if open
           const navbarToggler = document.getElementById("navbar");
           if (navbarToggler && !navbarToggler.classList.contains('collapsed')) {
             navbarToggler.click();
@@ -654,6 +636,7 @@
     function showPage(page) {
       const pages = ["home", "about", "privacy", "rate", "aims"];
       
+      // Hide all pages
       pages.forEach((p) => {
         const pageElement = document.getElementById(p);
         if (pageElement) {
@@ -661,11 +644,13 @@
         }
       });
       
+      // Show the requested page
       const activePage = document.getElementById(page);
       if (activePage) {
         activePage.classList.add("active");
       }
       
+      // Update active nav link
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${page}`) {
@@ -675,42 +660,54 @@
     }
 
     function loadSavedData() {
-      // Load all saved data (same as before)
-      if (localStorage.getItem("AIMSnumber")) {
-        document.getElementById("AIMSnumber").value = localStorage.getItem("AIMSnumber");
+      // Load AIMS number
+      const aimsInput = document.getElementById("AIMSnumber");
+      if (aimsInput && localStorage.getItem("AIMSnumber")) {
+        aimsInput.value = localStorage.getItem("AIMSnumber");
       }
       
-      if (localStorage.getItem("chandaNotes")) {
-        document.getElementById("notesTextarea").value = localStorage.getItem("chandaNotes");
+      // Load notes
+      const notesTextarea = document.getElementById("notesTextarea");
+      if (notesTextarea && localStorage.getItem("chandaNotes")) {
+        notesTextarea.value = localStorage.getItem("chandaNotes");
       }
       
-      if (localStorage.getItem("isMusis") === "true") {
-        document.getElementById("musisCheckbox").checked = true;
+      // Load member type
+      const musisCheckbox = document.getElementById("musisCheckbox");
+      if (musisCheckbox && localStorage.getItem("isMusis") === "true") {
+        musisCheckbox.checked = true;
       }
       
-      if (localStorage.getItem("memberGroup")) {
-        document.getElementById("memberGroup").value = localStorage.getItem("memberGroup");
+      // Load member group
+      const memberGroupSelect = document.getElementById("memberGroup");
+      if (memberGroupSelect && localStorage.getItem("memberGroup")) {
+        memberGroupSelect.value = localStorage.getItem("memberGroup");
       }
       
-      if (localStorage.getItem("fromMonth")) {
-        document.getElementById("fromMonth").value = localStorage.getItem("fromMonth");
+      // Load date range
+      const fromMonthSelect = document.getElementById("fromMonth");
+      if (fromMonthSelect && localStorage.getItem("fromMonth")) {
+        fromMonthSelect.value = localStorage.getItem("fromMonth");
       }
       
-      if (localStorage.getItem("fromYear")) {
-        document.getElementById("fromYear").value = localStorage.getItem("fromYear");
+      const fromYearSelect = document.getElementById("fromYear");
+      if (fromYearSelect && localStorage.getItem("fromYear")) {
+        fromYearSelect.value = localStorage.getItem("fromYear");
       }
       
-      if (localStorage.getItem("toMonth")) {
-        document.getElementById("toMonth").value = localStorage.getItem("toMonth");
+      const toMonthSelect = document.getElementById("toMonth");
+      if (toMonthSelect && localStorage.getItem("toMonth")) {
+        toMonthSelect.value = localStorage.getItem("toMonth");
       }
       
-      if (localStorage.getItem("toYear")) {
-        document.getElementById("toYear").value = localStorage.getItem("toYear");
+      const toYearSelect = document.getElementById("toYear");
+      if (toYearSelect && localStorage.getItem("toYear")) {
+        toYearSelect.value = localStorage.getItem("toYear");
       }
     }
 
     function initEventListeners() {
-      // Existing event listeners
+      // Member group change
       const memberGroupSelect = document.getElementById("memberGroup");
       if (memberGroupSelect) {
         memberGroupSelect.addEventListener("change", function() {
@@ -718,51 +715,353 @@
         });
       }
       
+      // Add row button
       const addRowBtn = document.getElementById("addRowBtn");
       if (addRowBtn) {
         addRowBtn.addEventListener("click", addRow);
       }
       
+      // Settings form submission
       const settingsForm = document.getElementById("settingsForm");
       if (settingsForm) {
         settingsForm.addEventListener("submit", saveSettings);
       }
       
+      // Salary input
       const salaryInput = document.getElementById("salary");
       if (salaryInput) {
         salaryInput.addEventListener("input", calculate);
       }
       
+      // Table input change listeners
       const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
       tableInputs.forEach(input => {
         input.addEventListener("input", calculate);
       });
       
+      // Notes textarea
       const notesTextarea = document.getElementById("notesTextarea");
       if (notesTextarea) {
         notesTextarea.addEventListener("blur", saveNotes);
       }
       
-      // NEW: Generate Image button
-      const generateImageBtn = document.getElementById("generateImageBtn");
-      if (generateImageBtn) {
-        generateImageBtn.addEventListener("click", generateAndPreviewImage);
+      // Save image button
+      const saveImageBtn = document.getElementById("saveImageBtn");
+      if (saveImageBtn) {
+        saveImageBtn.addEventListener("click", saveAsImage);
       }
       
-      // NEW: Quick Save button
-      const quickSaveBtn = document.getElementById("quickSaveBtn");
-      if (quickSaveBtn) {
-        quickSaveBtn.addEventListener("click", quickSaveImage);
+      // Share image button
+      const shareImageBtn = document.getElementById("shareImageBtn");
+      if (shareImageBtn) {
+        shareImageBtn.addEventListener("click", shareImage);
       }
     }
 
-    // NEW: Generate and preview image
-    function generateAndPreviewImage() {
-      document.getElementById('loadingSpinner').style.display = 'block';
+    function updateAimsDisplay() {
+      const aimsDisplay = document.getElementById("aimsDisplay");
+      const aimsDisplayText = document.getElementById("aimsDisplayText");
+      const dateRangeDisplay = document.getElementById("dateRangeDisplay");
       
-      // Create a clean printable version
-      const printableDiv = document.createElement('div');
-      printableDiv.className = 'printable-image';
+      if (!aimsDisplay || !aimsDisplayText || !dateRangeDisplay) return;
+      
+      const aimsNumber = localStorage.getItem("AIMSnumber");
+      const fromMonth = localStorage.getItem("fromMonth");
+      const fromYear = localStorage.getItem("fromYear");
+      const toMonth = localStorage.getItem("toMonth");
+      const toYear = localStorage.getItem("toYear");
+      
+      if (aimsNumber) {
+        aimsDisplayText.textContent = `AIMS: ${aimsNumber}`;
+        aimsDisplay.style.display = "block";
+        
+        let dateRangeText = '';
+        if (fromMonth && fromYear) {
+          if (toMonth && toYear) {
+            if (fromMonth === toMonth && fromYear === toYear) {
+              dateRangeText = `For: ${fromMonth} ${fromYear}`;
+            } else {
+              dateRangeText = `From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}`;
+            }
+          } else {
+            dateRangeText = `For: ${fromMonth} ${fromYear}`;
+          }
+        } else {
+          const currentDate = new Date();
+          const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+          const currentYear = currentDate.getFullYear();
+          dateRangeText = `For: ${currentMonth} ${currentYear}`;
+        }
+        
+        dateRangeDisplay.textContent = dateRangeText;
+      } else {
+        aimsDisplay.style.display = "none";
+      }
+    }
+
+    function saveNotes() {
+      const notesTextarea = document.getElementById("notesTextarea");
+      if (notesTextarea) {
+        const notes = notesTextarea.value;
+        localStorage.setItem("chandaNotes", notes);
+      }
+    }
+
+    function showSuccessMessage() {
+      const successMessage = document.getElementById("successMessage");
+      if (successMessage) {
+        successMessage.style.display = 'block';
+        setTimeout(function() {
+          successMessage.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    function showImageSuccessMessage() {
+      const imageSuccessMessage = document.getElementById("imageSuccessMessage");
+      if (imageSuccessMessage) {
+        imageSuccessMessage.style.display = 'block';
+        setTimeout(function() {
+          imageSuccessMessage.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    function addRow() {
+      const table = document.getElementById("myTable");
+      const tableBody = document.getElementById("tableBody");
+      
+      if (!table || !tableBody) return;
+      
+      const newRow = table.insertRow(table.rows.length - 1);
+      
+      const fundCell = newRow.insertCell();
+      const amountCell = newRow.insertCell();
+      const inputCell = newRow.insertCell();
+      
+      const fundInput = document.createElement("input");
+      fundInput.type = "text";
+      fundInput.style.width = "100%";
+      fundInput.placeholder = "Fund Name";
+      fundInput.className = "form-control additional-fund-input";
+      
+      const amountInput = document.createElement("input");
+      amountInput.type = "number";
+      amountInput.style.width = "75%";
+      amountInput.min = "0";
+      amountInput.className = "additionalField form-control additional-fund-amount";
+      amountInput.value = "0";
+      amountInput.addEventListener("input", calculate);
+      
+      fundCell.appendChild(fundInput);
+      amountCell.appendChild(amountInput);
+      inputCell.innerHTML = "&nbsp;";
+      
+      // Add event listener to the new fund input
+      fundInput.addEventListener("input", function() {
+        calculate();
+      });
+    }
+
+    function calculate() {
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+      }
+      
+      setTimeout(() => {
+        const salaryInput = document.getElementById("salary");
+        const salary = salaryInput ? parseFloat(salaryInput.value) || 0 : 0;
+        const isMusis = localStorage.getItem("isMusis") === "true";
+        const group = localStorage.getItem("memberGroup");
+        const inputAam = parseFloat(document.getElementById("inputAam")?.value) || 0;
+        const inputJalsa = parseFloat(document.getElementById("inputJalsa")?.value) || 0;
+        const inputKhuddam = parseFloat(document.getElementById("inputKhuddam")?.value) || 0;
+        const inputIjtema = parseFloat(document.getElementById("inputIjtema")?.value) || 0;
+        const inputTehrik = parseFloat(document.getElementById("inputTehrik")?.value) || 0;
+        const inputWaqf = parseFloat(document.getElementById("inputWaqf")?.value) || 0;
+        
+        // Get additional field values
+        const additionalFields = document.querySelectorAll(".additionalField");
+        let totalAdditional = 0;
+        additionalFields.forEach(field => {
+          totalAdditional += parseFloat(field.value) || 0;
+        });
+        
+        if (!group) {
+          if (loadingSpinner) loadingSpinner.style.display = 'none';
+          resetCalculationValues();
+          return;
+        }
+        
+        let aamString, groupString, aam, jalsa, khuddam, ijtema;
+        
+        if (group === "Student" || group === "Non-earning Lajna") {
+          aamString = "Aam";
+          groupString = group === "Student" ? "Student" : "Non-earning Lajna";
+          aam = 0;
+          jalsa = 0;
+          
+          if (group === "Student") {
+            khuddam = 60;
+            ijtema = 15;
+          } else {
+            khuddam = 65;
+            ijtema = 30;
+          }
+        } else {
+          aamString = isMusis ? "Wassiyat" : "Aam";
+          groupString = group;
+          
+          if (salary === 0) {
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+            resetCalculationValues();
+            return;
+          }
+          
+          if (group === "Ansar") {
+            aam = isMusis ? 
+              Math.ceil((10 / 100) * salary) : 
+              Math.ceil((6.25 / 100) * salary);
+            
+            jalsa = Math.ceil((0.833 / 100) * salary);
+            khuddam = Math.ceil((1 / 100) * salary);
+            ijtema = Math.ceil((0.0833 / 100) * salary);
+          } else {
+            aam = isMusis ? 
+              Math.ceil((10 / 100) * salary) : 
+              Math.ceil((6.25 / 100) * salary);
+            
+            jalsa = Math.ceil(((10 / 100) * salary) / 12);
+            khuddam = Math.ceil((1 / 100) * salary);
+            ijtema = Math.ceil(((3 / 100) * salary) / 12);
+          }
+        }
+        
+        aam += inputAam;
+        jalsa += inputJalsa;
+        khuddam += inputKhuddam;
+        ijtema += inputIjtema;
+        
+        const tehrikValue = inputTehrik > 0 ? inputTehrik : '-';
+        const waqfValue = inputWaqf > 0 ? inputWaqf : '-';
+        
+        // Calculate total including additional funds
+        let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
+        
+        // Update UI elements if they exist
+        const aamStringElement = document.getElementById("aamString");
+        const aamValueElement = document.getElementById("aamValue");
+        const jalsaValueElement = document.getElementById("jalsaValue");
+        const groupStringElement = document.getElementById("groupString");
+        const khuddamValueElement = document.getElementById("khuddamValue");
+        const ijtemaValueElement = document.getElementById("ijtemaValue");
+        const tehrikValueElement = document.getElementById("tehrikValue");
+        const waqfValueElement = document.getElementById("waqfValue");
+        const totalValueElement = document.getElementById("totalValue");
+        
+        if (aamStringElement) aamStringElement.textContent = aamString;
+        if (aamValueElement) aamValueElement.textContent = aam || '-';
+        if (jalsaValueElement) jalsaValueElement.textContent = jalsa || '-';
+        if (groupStringElement) groupStringElement.textContent = groupString;
+        if (khuddamValueElement) khuddamValueElement.textContent = khuddam || '-';
+        if (ijtemaValueElement) ijtemaValueElement.textContent = ijtema || '-';
+        if (tehrikValueElement) tehrikValueElement.textContent = tehrikValue;
+        if (waqfValueElement) waqfValueElement.textContent = waqfValue;
+        if (totalValueElement) totalValueElement.textContent = total || '-';
+        
+        if (loadingSpinner) {
+          loadingSpinner.style.display = 'none';
+        }
+      }, 100);
+    }
+
+    function resetCalculationValues() {
+      const elements = {
+        "aamString": "Aam",
+        "aamValue": "-",
+        "jalsaValue": "-",
+        "groupString": "Khuddam",
+        "khuddamValue": "-",
+        "ijtemaValue": "-",
+        "tehrikValue": "-",
+        "waqfValue": "-",
+        "totalValue": "-"
+      };
+      
+      for (const [id, value] of Object.entries(elements)) {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = value;
+        }
+      }
+    }
+
+    function saveSettings(event) {
+      event.preventDefault();
+      
+      const AIMSnumber = document.getElementById("AIMSnumber")?.value;
+      const isMusis = document.getElementById("musisCheckbox")?.checked;
+      const memberGroup = document.getElementById("memberGroup")?.value;
+      const fromMonth = document.getElementById("fromMonth")?.value;
+      const fromYear = document.getElementById("fromYear")?.value;
+      const toMonth = document.getElementById("toMonth")?.value;
+      const toYear = document.getElementById("toYear")?.value;
+      
+      // Member Group is required
+      if (!memberGroup) {
+        alert("Please select a Member Group.");
+        return;
+      }
+      
+      // Date validation
+      if (toMonth && toYear && fromMonth && fromYear) {
+        const months = ["January", "February", "March", "April", "May", "June", 
+                       "July", "August", "September", "October", "November", "December"];
+        const fromMonthIndex = months.indexOf(fromMonth);
+        const toMonthIndex = months.indexOf(toMonth);
+        
+        if (toYear < fromYear || (toYear === fromYear && toMonthIndex < fromMonthIndex)) {
+          alert("'To' date should be after or equal to 'From' date.");
+          return;
+        }
+      }
+      
+      // Save to localStorage
+      if (AIMSnumber) {
+        localStorage.setItem("AIMSnumber", AIMSnumber);
+      } else {
+        localStorage.removeItem("AIMSnumber");
+      }
+      
+      localStorage.setItem("isMusis", isMusis);
+      localStorage.setItem("memberGroup", memberGroup);
+      
+      // Save date values (can be empty)
+      localStorage.setItem("fromMonth", fromMonth || "");
+      localStorage.setItem("fromYear", fromYear || "");
+      localStorage.setItem("toMonth", toMonth || "");
+      localStorage.setItem("toYear", toYear || "");
+      
+      updateAimsDisplay();
+      showSuccessMessage();
+      showPage("home");
+      checkMemberGroupForHome();
+      
+      const salary = document.getElementById("salary")?.value;
+      if (salary) {
+        calculate();
+      }
+    }
+
+    function createCleanCapture() {
+      const captureDiv = document.createElement("div");
+      captureDiv.style.backgroundColor = "white";
+      captureDiv.style.padding = "20px";
+      captureDiv.style.borderRadius = "5px";
+      captureDiv.style.maxWidth = "600px";
+      captureDiv.style.margin = "0 auto";
+      captureDiv.style.fontFamily = "Arial, sans-serif";
       
       const memberGroup = localStorage.getItem("memberGroup") || "-";
       const aimsNumber = localStorage.getItem("AIMSnumber");
@@ -770,44 +1069,44 @@
       const fromYear = localStorage.getItem("fromYear");
       const toMonth = localStorage.getItem("toMonth");
       const toYear = localStorage.getItem("toYear");
-      const notes = document.getElementById("notesTextarea").value;
+      const notesTextarea = document.getElementById("notesTextarea");
+      const notes = notesTextarea ? notesTextarea.value : "";
       
-      // Build the printable content
-      let content = `<h2 style="text-align:center; color:#343a40; border-bottom:2px solid #ffc107; padding-bottom:10px; margin-bottom:20px;">
-        Chanda ${memberGroup} Breakdown
-      </h2>`;
-      
+      // AIMS display
+      let aimsHTML = '';
       if (aimsNumber) {
-        content += `<div style="background-color:#f8f9fa; padding:10px 15px; border-radius:5px; margin-bottom:15px; border-left:4px solid #ffc107;">
-          <span style="color:#28a745; font-size:1.2rem; font-weight:bold; display:block;">AIMS: ${aimsNumber}</span>`;
+        aimsHTML += `<div style="background-color:#f8f9fa;padding:10px 15px;border-radius:5px;margin-bottom:15px;border-left:4px solid #ffc107;">`;
+        aimsHTML += `<span style="color:#28a745;font-size:1.2rem;font-weight:bold;margin-bottom:10px;display:block">AIMS: ${aimsNumber}</span>`;
         
+        // Date range
         if (fromMonth && fromYear) {
           if (toMonth && toYear) {
             if (fromMonth === toMonth && fromYear === toYear) {
-              content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">For: ${fromMonth} ${fromYear}</div>`;
+              aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">For: ${fromMonth} ${fromYear}</div>`;
             } else {
-              content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}</div>`;
+              aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}</div>`;
             }
           } else {
-            content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">For: ${fromMonth} ${fromYear}</div>`;
+            aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">For: ${fromMonth} ${fromYear}</div>`;
           }
         } else {
+          // Current date if no date range is set
           const currentDate = new Date();
           const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
           const currentYear = currentDate.getFullYear();
-          content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">For: ${currentMonth} ${currentYear}</div>`;
+          aimsHTML += `<div style="font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold">For: ${currentMonth} ${currentYear}</div>`;
         }
-        content += '</div>';
+        aimsHTML += '</div>';
       }
       
-      // Create table
-      let tableHTML = '<table class="print-table"><thead><tr><th>Funds</th><th>Amount (Rs)</th></tr></thead><tbody>';
+      let tableHTML = '';
       let totalAmount = 0;
       
-      // Get all funds from the table
+      // Get all table rows (including additional funds)
       const tableRows = document.querySelectorAll("#myTable tbody tr");
       tableRows.forEach((row, index) => {
-        if (index === tableRows.length - 1) return; // Skip total row
+        // Skip the total row
+        if (index === tableRows.length - 1) return;
         
         let fundName = '';
         let amount = '';
@@ -839,188 +1138,175 @@
           if (amount !== '-') {
             const amountValue = parseFloat(amount.replace(/,/g, '')) || 0;
             totalAmount += amountValue;
-            amount = amountValue.toLocaleString();
           }
         }
         
         // Include if valid
         if (fundName && amount && amount !== '-' && amount !== '0') {
-          tableHTML += `<tr><td>${fundName}</td><td>${amount}</td></tr>`;
+          tableHTML += `<tr><td style="padding:8px;border-bottom:1px solid #dee2e6">${fundName}</td><td style="padding:8px;border-bottom:1px solid #dee2e6">${amount}</td></tr>`;
         }
       });
       
-      tableHTML += '</tbody></table>';
-      content += tableHTML;
+      const table = `
+        <table style="width:100%;margin-bottom:15px;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="background-color:#343a40;color:white;padding:10px;text-align:left">Funds</th>
+              <th style="background-color:#343a40;color:white;padding:10px;text-align:left">Amount (Rs)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="2" style="text-align:center;font-weight:bold;background-color:#f8f9fa;padding:15px;font-size:1.2rem">
+                Chanda ${memberGroup} Breakdown
+              </td>
+            </tr>
+            ${tableHTML}
+          </tbody>
+        </table>
+      `;
       
-      // Add total
-      content += `<div class="print-total">Total : Rs ${totalAmount.toLocaleString()}</div>`;
+      const totalHTML = `
+        <div style="text-align:right">
+          <div style="font-weight:bold;color:#28a745;font-size:1.2rem">Total : Rs ${totalAmount.toLocaleString()}</div>
+        </div>
+      `;
       
-      // Add notes if any
-      if (notes.trim()) {
-        content += `<div style="margin-top:30px; padding:15px; background-color:#f8f9fa; border-radius:5px;">
-          <strong>Notes:</strong><br>
-          <div style="margin-top:10px;">${notes.replace(/\n/g, '<br>')}</div>
-        </div>`;
+      const notesHTML = `
+        <div style="margin-top:20px">
+          <strong>Notes:</strong>
+          <div style="margin-top:10px;padding:10px;background-color:#f8f9fa;border-radius:5px;min-height:50px">
+            ${notes.trim() ? notes.replace(/\n/g, '<br>') : '<i>No notes added</i>'}
+          </div>
+        </div>
+      `;
+      
+      captureDiv.innerHTML = aimsHTML + table + totalHTML + notesHTML;
+      return captureDiv;
+    }
+
+    function saveAsImage() {
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
       }
       
-      // Add footer
-      content += `<div style="margin-top:30px; padding-top:15px; border-top:1px solid #dee2e6; text-align:center; color:#6c757d; font-size:0.8rem;">
-        Generated by Chanda Calculator • ${new Date().toLocaleDateString()}
-      </div>`;
-      
-      printableDiv.innerHTML = content;
-      
-      // Use html2canvas to capture the printable content
-      html2canvas(printableDiv, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        width: printableDiv.offsetWidth,
-        height: printableDiv.offsetHeight
-      }).then(canvas => {
-        // Convert to data URL
-        latestImageDataUrl = canvas.toDataURL('image/png');
+      setTimeout(() => {
+        const captureDiv = createCleanCapture();
+        document.body.appendChild(captureDiv);
         
-        // Display in preview modal
-        const previewContainer = document.getElementById('imagePreviewContainer');
-        previewContainer.innerHTML = '';
-        previewContainer.appendChild(canvas);
+        // Force reflow
+        captureDiv.offsetHeight;
         
-        // Show preview modal
-        document.getElementById('imagePreviewModal').style.display = 'block';
-        document.getElementById('loadingSpinner').style.display = 'none';
-        showImageSuccessMessage();
-        
-        // Auto-download in background (for APK compatibility)
-        setTimeout(() => {
-          try {
-            const downloadLink = document.getElementById("imageDownload");
-            downloadLink.href = latestImageDataUrl;
+        html2canvas(captureDiv, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          width: captureDiv.offsetWidth,
+          height: captureDiv.offsetHeight,
+          onclone: function(clonedDoc, element) {
+            element.style.display = 'block';
+            element.style.visibility = 'visible';
+            element.style.opacity = '1';
+          }
+        }).then(canvas => {
+          const imageData = canvas.toDataURL('image/png');
+          const downloadLink = document.getElementById("imageDownload");
+          if (downloadLink) {
+            downloadLink.href = imageData;
             const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
             const dateStr = new Date().toISOString().slice(0,10);
             downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
             downloadLink.click();
-          } catch (error) {
-            console.log("Auto-download failed, user will need to save manually");
           }
-        }, 1000);
-        
-      }).catch(error => {
-        console.error('Error generating image:', error);
-        document.getElementById('loadingSpinner').style.display = 'none';
-        alert('Error generating image. Please try the Quick Save option instead.');
-      });
-    }
-
-    // NEW: Quick save (direct download)
-    function quickSaveImage() {
-      document.getElementById('loadingSpinner').style.display = 'block';
-      
-      // Simple capture of the main content area
-      const contentToCapture = document.querySelector('.card.mt-4 .card-body');
-      
-      if (!contentToCapture) {
-        alert('No content to save. Please complete your calculation first.');
-        document.getElementById('loadingSpinner').style.display = 'none';
-        return;
-      }
-      
-      html2canvas(contentToCapture, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
-        logging: false
-      }).then(canvas => {
-        const imageData = canvas.toDataURL('image/png');
-        
-        // Try multiple methods to save
-        let saved = false;
-        
-        // Method 1: Direct download
-        try {
-          const downloadLink = document.getElementById("imageDownload");
-          downloadLink.href = imageData;
-          const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
-          const dateStr = new Date().toISOString().slice(0,10);
-          downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
-          downloadLink.click();
-          saved = true;
-        } catch (e) {
-          console.log("Method 1 failed:", e);
-        }
-        
-        // Method 2: Open in new window
-        if (!saved) {
-          try {
-            const newWindow = window.open();
-            newWindow.document.write(`<img src="${imageData}" style="max-width:100%;">`);
-            newWindow.document.close();
-            saved = true;
-          } catch (e) {
-            console.log("Method 2 failed:", e);
+          
+          document.body.removeChild(captureDiv);
+          if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
           }
-        }
-        
-        // Method 3: Show instructions
-        if (!saved) {
-          const modal = document.getElementById('imagePreviewModal');
-          const container = document.getElementById('imagePreviewContainer');
-          container.innerHTML = `<img src="${imageData}" style="max-width:100%; border-radius:5px;">`;
-          modal.style.display = 'block';
-        }
-        
-        document.getElementById('loadingSpinner').style.display = 'none';
-        
-        if (saved) {
-          alert('Image saved successfully! Check your downloads folder.');
-        }
-        
-      }).catch(error => {
-        console.error('Error saving image:', error);
-        document.getElementById('loadingSpinner').style.display = 'none';
-        alert('Error saving image. Please take a screenshot instead.');
-      });
+          showImageSuccessMessage();
+        }).catch(error => {
+          console.error('Error generating image:', error);
+          if (captureDiv && captureDiv.parentNode) {
+            document.body.removeChild(captureDiv);
+          }
+          if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+          }
+          alert('Error generating image. Please try again.');
+        });
+      }, 100);
     }
 
-    // NEW: Download image function
-    function downloadImage() {
-      if (!latestImageDataUrl) {
-        alert('Please generate an image first using the "Generate Image" button.');
+    function shareImage() {
+      if (!navigator.share) {
+        alert('Sharing is not supported on this device/browser. Using download instead.');
+        saveAsImage();
         return;
       }
       
-      try {
-        const downloadLink = document.getElementById("imageDownload");
-        downloadLink.href = latestImageDataUrl;
-        const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
-        const dateStr = new Date().toISOString().slice(0,10);
-        downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
-        downloadLink.click();
-        alert('Image download started. Check your downloads folder.');
-      } catch (error) {
-        alert('Could not download automatically. Please:\n1. Long press the image\n2. Select "Save image"\n3. Or take a screenshot');
-      }
-    }
-
-    // NEW: Print image function
-    function printImage() {
-      if (!latestImageDataUrl) {
-        alert('Please generate an image first.');
-        return;
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
       }
       
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Print Chanda Breakdown</title>
-            <style>
-              body { margin: 0; padding: 20px; }
-              img { max-width: 100%; height: auto; }
-              @media print {
-                body { padding: 0; }
+      setTimeout(() => {
+        const captureDiv = createCleanCapture();
+        document.body.appendChild(captureDiv);
+        
+        // Force reflow
+        captureDiv.offsetHeight;
+        
+        html2canvas(captureDiv, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          width: captureDiv.offsetWidth,
+          height: captureDiv.offsetHeight,
+          onclone: function(clonedDoc, element) {
+            element.style.display = 'block';
+            element.style.visibility = 'visible';
+            element.style.opacity = '1';
+          }
+        }).then(canvas => {
+          canvas.toBlob(blob => {
+            const file = new File([blob], `Chanda_${localStorage.getItem("memberGroup") || "Breakdown"}.png`, { type: 'image/png' });
+            
+            navigator.share({
+              files: [file],
+              title: 'Chanda Breakdown',
+              text: 'My Chanda calculation breakdown'
+            }).then(() => {
+              console.log('Shared successfully');
+            }).catch(error => {
+              console.log('Sharing failed:', error);
+              saveAsImage();
+            }).finally(() => {
+              document.body.removeChild(captureDiv);
+              if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
               }
-            </style>
-          </head>
-          <body>
+            });
+          });
+        }).catch(error => {
+          console.error('Error generating image:', error);
+          if (captureDiv && captureDiv.parentNode) {
+            document.body.removeChild(captureDiv);
+          }
+          if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+          }
+          alert('Error generating image. Please try again.');
+        });
+      }, 100);
+    }
+  </script>
+</body>
+<footer class="footer mt-auto py-3 bg-dark">
+  <div class="container">
+    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
+  </div>
+</footer>
+</html>
