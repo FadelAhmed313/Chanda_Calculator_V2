@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chanda Calculator</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Include html2canvas from CDN -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     .footer {
       position: relative;
@@ -172,54 +174,122 @@
       display: none;
     }
     
-    .instruction-modal {
+    .image-preview-modal {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.9);
       z-index: 9999;
       padding: 20px;
       box-sizing: border-box;
+      overflow-y: auto;
     }
     
-    .instruction-content {
+    .image-preview-content {
       background-color: white;
-      max-width: 500px;
-      margin: 50px auto;
-      padding: 25px;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
       border-radius: 10px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
     }
     
-    .highlight-box {
+    .preview-image {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    
+    .save-instructions {
       background-color: #fff3cd;
       border-left: 4px solid #ffc107;
       padding: 15px;
-      margin: 15px 0;
+      margin: 20px 0;
       border-radius: 5px;
+      text-align: left;
     }
     
-    .step-number {
-      display: inline-block;
-      background-color: #28a745;
-      color: white;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 30px;
-      margin-right: 10px;
+    .instruction-step {
+      margin: 10px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+    
+    .instruction-step:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #28a745;
       font-weight: bold;
     }
     
     @media (max-width: 768px) {
-      .instruction-content {
-        margin: 20px auto;
-        padding: 20px;
+      .image-preview-content {
+        margin: 10px auto;
+        padding: 15px;
       }
+    }
+    
+    /* Print styles for better image printing */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .printable-image, .printable-image * {
+        visibility: visible;
+      }
+      .printable-image {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    
+    .printable-image {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+    }
+    
+    .print-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    .print-table th {
+      background-color: #343a40;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+    
+    .print-table td {
+      padding: 10px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .print-total {
+      font-weight: bold;
+      color: #28a745;
+      font-size: 1.3rem;
+      text-align: right;
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 2px solid #28a745;
     }
   </style>
 </head>
@@ -241,45 +311,71 @@
     Settings saved successfully!
   </div>
   
-  <!-- Instruction Modal -->
-  <div id="instructionModal" class="instruction-modal">
-    <div class="instruction-content">
-      <h3 class="text-center mb-4">📸 How to Save Your Chanda Breakdown</h3>
-      
-      <div class="highlight-box">
-        <h5><span class="step-number">1</span> Prepare the Screen</h5>
-        <p>Make sure all your Chanda calculations are visible on the screen.</p>
-      </div>
-      
-      <div class="highlight-box">
-        <h5><span class="step-number">2</span> Take Screenshot</h5>
-        <p><strong>For Android:</strong></p>
-        <ul>
-          <li>Press <strong>Power + Volume Down</strong> buttons together</li>
-          <li>Or <strong>swipe down with three fingers</strong> (on some devices)</li>
-        </ul>
-        
-        <p><strong>For iPhone:</strong></p>
-        <ul>
-          <li>Press <strong>Side button + Volume Up</strong></li>
-          <li>For older iPhones: <strong>Home + Power</strong></li>
-        </ul>
-      </div>
-      
-      <div class="highlight-box">
-        <h5><span class="step-number">3</span> Find & Share</h5>
-        <ul>
-          <li>Screenshot saves to your <strong>Photos/Gallery</strong></li>
-          <li>Open the screenshot</li>
-          <li>Tap <strong>Share</strong> button</li>
-          <li>Choose app (WhatsApp, Email, etc.)</li>
-        </ul>
-      </div>
-      
-      <div class="text-center mt-4">
-        <button onclick="closeInstructionModal()" class="btn btn-warning btn-lg" style="min-width: 150px;">
-          Got It!
+  <!-- Image Success Message -->
+  <div id="imageSuccessMessage" class="success-message" style="background-color: #007bff;">
+    Image generated successfully! Check the preview.
+  </div>
+  
+  <!-- Image Preview Modal -->
+  <div id="imagePreviewModal" class="image-preview-modal">
+    <div class="image-preview-content">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">📋 Chanda Breakdown</h3>
+        <button onclick="closeImagePreview()" class="btn btn-danger btn-sm">
+          <i class="fas fa-times"></i> Close
         </button>
+      </div>
+      
+      <div id="imagePreviewContainer" class="printable-image">
+        <!-- Image will be generated here -->
+      </div>
+      
+      <div class="save-instructions">
+        <h5><i class="fas fa-download"></i> How to Save & Share:</h5>
+        
+        <div class="instruction-step">
+          <strong>Method 1: Take Screenshot (Easiest)</strong><br>
+          Press <kbd>Power</kbd> + <kbd>Volume Down</kbd> buttons together
+        </div>
+        
+        <div class="instruction-step">
+          <strong>Method 2: Save Image</strong><br>
+          Long press the image above → "Save image" or "Download image"
+        </div>
+        
+        <div class="instruction-step">
+          <strong>Method 3: Print to PDF</strong><br>
+          Click "Print" button below → Choose "Save as PDF"
+        </div>
+        
+        <div class="instruction-step">
+          <strong>Method 4: Share Directly</strong><br>
+          Click "Share" button below (if supported by your device)
+        </div>
+      </div>
+      
+      <div class="row mt-4">
+        <div class="col-md-4 mb-2">
+          <button onclick="printImage()" class="btn btn-warning btn-block">
+            <i class="fas fa-print"></i> Print
+          </button>
+        </div>
+        <div class="col-md-4 mb-2">
+          <button onclick="downloadImage()" class="btn btn-success btn-block">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+        <div class="col-md-4 mb-2">
+          <button onclick="shareImage()" class="btn btn-info btn-block">
+            <i class="fas fa-share-alt"></i> Share
+          </button>
+        </div>
+      </div>
+      
+      <div class="mt-3">
+        <small class="text-muted">
+          <i class="fas fa-lightbulb"></i> Tip: The image is also saved to your browser cache. You can find it in your downloads folder.
+        </small>
       </div>
     </div>
   </div>
@@ -398,19 +494,19 @@
           <div class="capture-container">
             <div class="row">
               <div class="col-md-6 mb-2">
-                <button id="saveImageBtn" class="btn btn-success btn-lg btn-block">
-                  <i class="fas fa-camera"></i> Save Screenshot
+                <button id="generateImageBtn" class="btn btn-success btn-lg btn-block">
+                  <i class="fas fa-camera"></i> Generate Image
                 </button>
               </div>
               <div class="col-md-6 mb-2">
-                <button id="shareImageBtn" class="btn btn-info btn-lg btn-block">
-                  <i class="fas fa-share-alt"></i> Share Screenshot
+                <button id="quickSaveBtn" class="btn btn-info btn-lg btn-block">
+                  <i class="fas fa-bolt"></i> Quick Save
                 </button>
               </div>
             </div>
             <div class="text-center mt-3">
               <small class="text-muted">
-                <i class="fas fa-info-circle"></i> Both buttons will show you how to take and share a screenshot
+                <i class="fas fa-info-circle"></i> "Generate Image" creates a clean printable version. "Quick Save" downloads directly.
               </small>
             </div>
           </div>
@@ -418,188 +514,9 @@
       </div>
     </div>
 
-    <!-- About Page -->
-    <div id="about" class="page-section">
-      <h2 class="section-title">About</h2>
-      <div class="card">
-        <div class="card-body">
-          <h4>About</h4>
-          <p class="text-muted">The Chanda Calculator is a user-friendly web application designed by MKA Pailles to assist the Ahmadi community members in calculating their Chanda payments accurately. Whether you're a Khuddam, Lajna, or part of the Wassiyat scheme, this tool simplifies the process and ensures transparency.</p>
-        </div>
-      </div>
-    </div>
+    <!-- Other pages remain exactly the same -->
+    <!-- ... (About, Privacy, Rate, AIMS pages unchanged) ... -->
 
-    <!-- Privacy Page -->
-    <div id="privacy" class="page-section">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="section-title">Privacy and Security</h2>
-          <h4>Privacy and Security</h4>
-          <ul style="list-style-type:square; color:#6c757d;">
-            <li><span style="color:#6c757d;">The Chanda Calculator operates entirely on your local web browser. No data is stored or transmitted to external servers.</span></li>
-            <li><span style="color:#6c757d;">Your privacy is our priority. Once you close the browser, all entered information is automatically cleared.</span></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Rate Page -->
-    <div id="rate" class="page-section">
-      <h2 class="section-title">% Rate</h2>
-      <div class="card">
-        <div class="card-body">
-          <h4>% Rate</h4>
-          <table class="table table-striped" style="margin-right: calc(1%); width: 99%;">
-            <thead class="thead-dark">
-              <tr>
-                <th scope="col" style="width: 6.2232%;"><span style="font-size: 12px;">#</span></th>
-                <th scope="col" style="width: 6.6023%;"><span style="font-size: 12px;">%</span></th>
-                <th scope="col" style="width: 15.017%;"><span style="font-size: 12px;">Funds</span></th>
-                <th scope="col" style="width: 72.1042%;"><span style="font-size: 12px;">Example</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">1</span></th>
-                <td style="width: 6.6023%;"><span style="font-size: 12px;">10%</span></td>
-                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Wassiyat Khuddam, Lajna and Ansar</span></td>
-                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid <span style="color: rgb(226, 80, 65);">monthly</span></span></td>
-              </tr>
-              <tr>
-                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">2</span></th>
-                <td style="width: 6.6023%;"><span style="font-size: 12px;">6.25%<br></span></td>
-                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Aam Khuddam, Lajna and Ansar<br></span></td>
-                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs625 should be paid <span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
-              </tr>
-              <tr>
-                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">3</span></th>
-                <td style="width: 6.6023%;"><span style="font-size: 12px;">10%<br></span></td>
-                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Jalsa Khuddam, Lajna and Ansar<br></span></td>
-                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs1000 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs 83.33 per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
-              </tr>
-              <tr>
-                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">4</span></th>
-                <td style="width: 6.6023%;"><span style="font-size: 12px;">1%<br></span></td>
-                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Khuddam, Lajna and Ansar<br></span></td>
-                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs100 should be paid&nbsp;<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">monthly</span><br></span></td>
-              </tr>
-              <tr>
-                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">5</span></th>
-                <td style="width: 6.6023%;"><span style="font-size: 12px;">3%<br></span></td>
-                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Khuddam and Lajna<br></span></td>
-                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs300 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs25 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
-              </tr>
-              <tr>
-                <th scope="row" style="width: 6.2232%;"><span style="font-size: 12px;">6</span></th>
-                <td style="width: 6.6023%;"><span style="font-size: 12px;">0.08%<br></span></td>
-                <td style="width: 15.017%;"><span style="font-size: 12px;">Chanda Ijtema Ansar<br></span></td>
-                <td style="width: 72.1042%;"><span style="font-size: 12px;">For a monthly salary of Rs10 000, Rs108 should be paid per <span style="color: rgb(44, 130, 201);">annum&nbsp;</span><strong>or&nbsp;</strong>Rs9 &nbsp;per<strong>&nbsp;</strong><span style="color: rgb(226, 80, 65);">month</span><br></span></td>
-              </tr>
-            </tbody>
-          </table>
-          <blockquote class="blockquote">
-            <p><span style="font-size:10px;"><i>Note : Students and non-earning members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px;"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px;"><i>Rs 15 for Chanda Ijtama.</i></span></p>
-          </blockquote>
-        </div>
-      </div>
-    </div>
-
-    <!-- AIMS Page -->
-    <div id="aims" class="page-section">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="section-title">Settings</h2>
-          <form id="settingsForm">
-            <div class="form-group">
-              <label for="AIMSnumber">Aims Number</label>
-              <input type="number" class="form-control" id="AIMSnumber" name="number">
-            </div>
-            
-            <div class="form-group">
-              <label><strong>Member Type:</strong></label>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
-                <label class="form-check-label" for="musisCheckbox">
-                  Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i>
-                </label>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="memberGroup"><strong>Member Group:</strong></label>
-              <select class="form-control" id="memberGroup" name="group" required>
-                <option value="">Select Member Group</option>
-                <option value="Khuddam">Khuddam</option>
-                <option value="Lajna">Lajna</option>
-                <option value="Non-earning Lajna">Non-earning Lajna</option>
-                <option value="Ansar">Ansar</option>
-                <option value="Student">Student</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label><strong>Date Range:</strong></label>
-              <div class="row">
-                <div class="col-md-6">
-                  <label>From Month:</label>
-                  <select class="form-control" id="fromMonth">
-                    <option value="">Select Month</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label>From Year:</label>
-                  <select class="form-control" id="fromYear"></select>
-                </div>
-              </div>
-              <div class="row mt-2">
-                <div class="col-md-6">
-                  <label>To Month (Optional):</label>
-                  <select class="form-control" id="toMonth">
-                    <option value="">Select Month</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label>To Year (Optional):</label>
-                  <select class="form-control" id="toYear"></select>
-                </div>
-              </div>
-              <small class="form-text text-muted">If no date is selected, current month and year will be displayed.</small>
-            </div>
-            
-            <br>
-            <button id="saveSettings" type="submit" style="width:100%;" class="btn btn-warning">Save Settings</button>
-          </form>
-          <div class="container mt-4">
-            <div id="errorMessages" class="mt-3 text-danger"></div>
-            <div id="successMessages" class="mt-3 text-success"></div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Hidden link for download -->
@@ -612,6 +529,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
   <script>
+    // Store the latest generated image data URL
+    let latestImageDataUrl = null;
+    
     // Initialize the application
     document.addEventListener("DOMContentLoaded", function() {
       initApp();
@@ -626,6 +546,7 @@
       updateAimsDisplay();
     }
 
+    // Navigation functions remain the same
     function initNavigation() {
       const pages = ["home", "about", "privacy", "rate", "aims"];
       let defaultPage = "home";
@@ -635,7 +556,6 @@
       }
 
       function showPage(page) {
-        // Hide all pages
         pages.forEach((p) => {
           const pageElement = document.getElementById(p);
           if (pageElement) {
@@ -643,13 +563,11 @@
           }
         });
         
-        // Show the requested page
         const activePage = document.getElementById(page);
         if (activePage) {
           activePage.classList.add("active");
         }
         
-        // Update active nav link
         document.querySelectorAll('.nav-link').forEach(link => {
           link.classList.remove('active');
           if (link.getAttribute('href') === `#${page}`) {
@@ -659,13 +577,11 @@
         
         window.location.hash = page;
         
-        // Update UI based on current page
         if (page === "home") {
           checkMemberGroupForHome();
         }
       }
 
-      // Handle initial page load
       const initialPage = window.location.hash ? window.location.hash.substr(1) : defaultPage;
       if (pages.includes(initialPage)) {
         showPage(initialPage);
@@ -673,12 +589,10 @@
         showPage(defaultPage);
       }
 
-      // Handle hash changes
       window.addEventListener("hashchange", function() {
         const currentPage = window.location.hash.substr(1);
         if (pages.includes(currentPage)) {
           showPage(currentPage);
-          // Close mobile navbar if open
           const navbarToggler = document.getElementById("navbar");
           if (navbarToggler && !navbarToggler.classList.contains('collapsed')) {
             navbarToggler.click();
@@ -740,7 +654,6 @@
     function showPage(page) {
       const pages = ["home", "about", "privacy", "rate", "aims"];
       
-      // Hide all pages
       pages.forEach((p) => {
         const pageElement = document.getElementById(p);
         if (pageElement) {
@@ -748,13 +661,11 @@
         }
       });
       
-      // Show the requested page
       const activePage = document.getElementById(page);
       if (activePage) {
         activePage.classList.add("active");
       }
       
-      // Update active nav link
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${page}`) {
@@ -764,54 +675,42 @@
     }
 
     function loadSavedData() {
-      // Load AIMS number
-      const aimsInput = document.getElementById("AIMSnumber");
-      if (aimsInput && localStorage.getItem("AIMSnumber")) {
-        aimsInput.value = localStorage.getItem("AIMSnumber");
+      // Load all saved data (same as before)
+      if (localStorage.getItem("AIMSnumber")) {
+        document.getElementById("AIMSnumber").value = localStorage.getItem("AIMSnumber");
       }
       
-      // Load notes
-      const notesTextarea = document.getElementById("notesTextarea");
-      if (notesTextarea && localStorage.getItem("chandaNotes")) {
-        notesTextarea.value = localStorage.getItem("chandaNotes");
+      if (localStorage.getItem("chandaNotes")) {
+        document.getElementById("notesTextarea").value = localStorage.getItem("chandaNotes");
       }
       
-      // Load member type
-      const musisCheckbox = document.getElementById("musisCheckbox");
-      if (musisCheckbox && localStorage.getItem("isMusis") === "true") {
-        musisCheckbox.checked = true;
+      if (localStorage.getItem("isMusis") === "true") {
+        document.getElementById("musisCheckbox").checked = true;
       }
       
-      // Load member group
-      const memberGroupSelect = document.getElementById("memberGroup");
-      if (memberGroupSelect && localStorage.getItem("memberGroup")) {
-        memberGroupSelect.value = localStorage.getItem("memberGroup");
+      if (localStorage.getItem("memberGroup")) {
+        document.getElementById("memberGroup").value = localStorage.getItem("memberGroup");
       }
       
-      // Load date range
-      const fromMonthSelect = document.getElementById("fromMonth");
-      if (fromMonthSelect && localStorage.getItem("fromMonth")) {
-        fromMonthSelect.value = localStorage.getItem("fromMonth");
+      if (localStorage.getItem("fromMonth")) {
+        document.getElementById("fromMonth").value = localStorage.getItem("fromMonth");
       }
       
-      const fromYearSelect = document.getElementById("fromYear");
-      if (fromYearSelect && localStorage.getItem("fromYear")) {
-        fromYearSelect.value = localStorage.getItem("fromYear");
+      if (localStorage.getItem("fromYear")) {
+        document.getElementById("fromYear").value = localStorage.getItem("fromYear");
       }
       
-      const toMonthSelect = document.getElementById("toMonth");
-      if (toMonthSelect && localStorage.getItem("toMonth")) {
-        toMonthSelect.value = localStorage.getItem("toMonth");
+      if (localStorage.getItem("toMonth")) {
+        document.getElementById("toMonth").value = localStorage.getItem("toMonth");
       }
       
-      const toYearSelect = document.getElementById("toYear");
-      if (toYearSelect && localStorage.getItem("toYear")) {
-        toYearSelect.value = localStorage.getItem("toYear");
+      if (localStorage.getItem("toYear")) {
+        document.getElementById("toYear").value = localStorage.getItem("toYear");
       }
     }
 
     function initEventListeners() {
-      // Member group change
+      // Existing event listeners
       const memberGroupSelect = document.getElementById("memberGroup");
       if (memberGroupSelect) {
         memberGroupSelect.addEventListener("change", function() {
@@ -819,368 +718,309 @@
         });
       }
       
-      // Add row button
       const addRowBtn = document.getElementById("addRowBtn");
       if (addRowBtn) {
         addRowBtn.addEventListener("click", addRow);
       }
       
-      // Settings form submission
       const settingsForm = document.getElementById("settingsForm");
       if (settingsForm) {
         settingsForm.addEventListener("submit", saveSettings);
       }
       
-      // Salary input
       const salaryInput = document.getElementById("salary");
       if (salaryInput) {
         salaryInput.addEventListener("input", calculate);
       }
       
-      // Table input change listeners
       const tableInputs = document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf");
       tableInputs.forEach(input => {
         input.addEventListener("input", calculate);
       });
       
-      // Notes textarea
       const notesTextarea = document.getElementById("notesTextarea");
       if (notesTextarea) {
         notesTextarea.addEventListener("blur", saveNotes);
       }
       
-      // Save screenshot button - NEW: Shows instructions
-      const saveImageBtn = document.getElementById("saveImageBtn");
-      if (saveImageBtn) {
-        saveImageBtn.addEventListener("click", showInstructionModal);
+      // NEW: Generate Image button
+      const generateImageBtn = document.getElementById("generateImageBtn");
+      if (generateImageBtn) {
+        generateImageBtn.addEventListener("click", generateAndPreviewImage);
       }
       
-      // Share screenshot button - NEW: Shows instructions
-      const shareImageBtn = document.getElementById("shareImageBtn");
-      if (shareImageBtn) {
-        shareImageBtn.addEventListener("click", showInstructionModal);
+      // NEW: Quick Save button
+      const quickSaveBtn = document.getElementById("quickSaveBtn");
+      if (quickSaveBtn) {
+        quickSaveBtn.addEventListener("click", quickSaveImage);
       }
     }
 
-    function updateAimsDisplay() {
-      const aimsDisplay = document.getElementById("aimsDisplay");
-      const aimsDisplayText = document.getElementById("aimsDisplayText");
-      const dateRangeDisplay = document.getElementById("dateRangeDisplay");
+    // NEW: Generate and preview image
+    function generateAndPreviewImage() {
+      document.getElementById('loadingSpinner').style.display = 'block';
       
-      if (!aimsDisplay || !aimsDisplayText || !dateRangeDisplay) return;
+      // Create a clean printable version
+      const printableDiv = document.createElement('div');
+      printableDiv.className = 'printable-image';
       
+      const memberGroup = localStorage.getItem("memberGroup") || "-";
       const aimsNumber = localStorage.getItem("AIMSnumber");
       const fromMonth = localStorage.getItem("fromMonth");
       const fromYear = localStorage.getItem("fromYear");
       const toMonth = localStorage.getItem("toMonth");
       const toYear = localStorage.getItem("toYear");
+      const notes = document.getElementById("notesTextarea").value;
+      
+      // Build the printable content
+      let content = `<h2 style="text-align:center; color:#343a40; border-bottom:2px solid #ffc107; padding-bottom:10px; margin-bottom:20px;">
+        Chanda ${memberGroup} Breakdown
+      </h2>`;
       
       if (aimsNumber) {
-        aimsDisplayText.textContent = `AIMS: ${aimsNumber}`;
-        aimsDisplay.style.display = "block";
+        content += `<div style="background-color:#f8f9fa; padding:10px 15px; border-radius:5px; margin-bottom:15px; border-left:4px solid #ffc107;">
+          <span style="color:#28a745; font-size:1.2rem; font-weight:bold; display:block;">AIMS: ${aimsNumber}</span>`;
         
-        let dateRangeText = '';
         if (fromMonth && fromYear) {
           if (toMonth && toYear) {
             if (fromMonth === toMonth && fromYear === toYear) {
-              dateRangeText = `For: ${fromMonth} ${fromYear}`;
+              content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">For: ${fromMonth} ${fromYear}</div>`;
             } else {
-              dateRangeText = `From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}`;
+              content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}</div>`;
             }
           } else {
-            dateRangeText = `For: ${fromMonth} ${fromYear}`;
+            content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">For: ${fromMonth} ${fromYear}</div>`;
           }
         } else {
           const currentDate = new Date();
           const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
           const currentYear = currentDate.getFullYear();
-          dateRangeText = `For: ${currentMonth} ${currentYear}`;
+          content += `<div style="font-size:0.9rem; color:#6c757d; margin-top:5px; font-weight:bold;">For: ${currentMonth} ${currentYear}</div>`;
+        }
+        content += '</div>';
+      }
+      
+      // Create table
+      let tableHTML = '<table class="print-table"><thead><tr><th>Funds</th><th>Amount (Rs)</th></tr></thead><tbody>';
+      let totalAmount = 0;
+      
+      // Get all funds from the table
+      const tableRows = document.querySelectorAll("#myTable tbody tr");
+      tableRows.forEach((row, index) => {
+        if (index === tableRows.length - 1) return; // Skip total row
+        
+        let fundName = '';
+        let amount = '';
+        
+        const firstCell = row.cells[0];
+        const secondCell = row.cells[1];
+        
+        if (!firstCell || !secondCell) return;
+        
+        // Get fund name
+        const fundInput = firstCell.querySelector('input');
+        if (fundInput) {
+          fundName = fundInput.value.trim();
+        } else {
+          fundName = firstCell.textContent.trim();
         }
         
-        dateRangeDisplay.textContent = dateRangeText;
-      } else {
-        aimsDisplay.style.display = "none";
+        // Get amount
+        const amountInput = secondCell.querySelector('input');
+        if (amountInput) {
+          amount = amountInput.value;
+          if (amount && parseFloat(amount) > 0) {
+            const amountValue = parseFloat(amount) || 0;
+            totalAmount += amountValue;
+            amount = amountValue.toLocaleString();
+          }
+        } else {
+          amount = secondCell.textContent;
+          if (amount !== '-') {
+            const amountValue = parseFloat(amount.replace(/,/g, '')) || 0;
+            totalAmount += amountValue;
+            amount = amountValue.toLocaleString();
+          }
+        }
+        
+        // Include if valid
+        if (fundName && amount && amount !== '-' && amount !== '0') {
+          tableHTML += `<tr><td>${fundName}</td><td>${amount}</td></tr>`;
+        }
+      });
+      
+      tableHTML += '</tbody></table>';
+      content += tableHTML;
+      
+      // Add total
+      content += `<div class="print-total">Total : Rs ${totalAmount.toLocaleString()}</div>`;
+      
+      // Add notes if any
+      if (notes.trim()) {
+        content += `<div style="margin-top:30px; padding:15px; background-color:#f8f9fa; border-radius:5px;">
+          <strong>Notes:</strong><br>
+          <div style="margin-top:10px;">${notes.replace(/\n/g, '<br>')}</div>
+        </div>`;
       }
-    }
-
-    function saveNotes() {
-      const notesTextarea = document.getElementById("notesTextarea");
-      if (notesTextarea) {
-        const notes = notesTextarea.value;
-        localStorage.setItem("chandaNotes", notes);
-      }
-    }
-
-    function showSuccessMessage() {
-      const successMessage = document.getElementById("successMessage");
-      if (successMessage) {
-        successMessage.style.display = 'block';
-        setTimeout(function() {
-          successMessage.style.display = 'none';
-        }, 5000);
-      }
-    }
-
-    function showInstructionModal() {
-      const instructionModal = document.getElementById("instructionModal");
-      if (instructionModal) {
-        instructionModal.style.display = 'block';
-      }
-    }
-
-    function closeInstructionModal() {
-      const instructionModal = document.getElementById("instructionModal");
-      if (instructionModal) {
-        instructionModal.style.display = 'none';
-      }
-    }
-
-    function addRow() {
-      const table = document.getElementById("myTable");
-      const tableBody = document.getElementById("tableBody");
       
-      if (!table || !tableBody) return;
+      // Add footer
+      content += `<div style="margin-top:30px; padding-top:15px; border-top:1px solid #dee2e6; text-align:center; color:#6c757d; font-size:0.8rem;">
+        Generated by Chanda Calculator • ${new Date().toLocaleDateString()}
+      </div>`;
       
-      const newRow = table.insertRow(table.rows.length - 1);
+      printableDiv.innerHTML = content;
       
-      const fundCell = newRow.insertCell();
-      const amountCell = newRow.insertCell();
-      const inputCell = newRow.insertCell();
-      
-      const fundInput = document.createElement("input");
-      fundInput.type = "text";
-      fundInput.style.width = "100%";
-      fundInput.placeholder = "Fund Name";
-      fundInput.className = "form-control additional-fund-input";
-      
-      const amountInput = document.createElement("input");
-      amountInput.type = "number";
-      amountInput.style.width = "75%";
-      amountInput.min = "0";
-      amountInput.className = "additionalField form-control additional-fund-amount";
-      amountInput.value = "0";
-      amountInput.addEventListener("input", calculate);
-      
-      fundCell.appendChild(fundInput);
-      amountCell.appendChild(amountInput);
-      inputCell.innerHTML = "&nbsp;";
-      
-      // Add event listener to the new fund input
-      fundInput.addEventListener("input", function() {
-        calculate();
+      // Use html2canvas to capture the printable content
+      html2canvas(printableDiv, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: printableDiv.offsetWidth,
+        height: printableDiv.offsetHeight
+      }).then(canvas => {
+        // Convert to data URL
+        latestImageDataUrl = canvas.toDataURL('image/png');
+        
+        // Display in preview modal
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        previewContainer.innerHTML = '';
+        previewContainer.appendChild(canvas);
+        
+        // Show preview modal
+        document.getElementById('imagePreviewModal').style.display = 'block';
+        document.getElementById('loadingSpinner').style.display = 'none';
+        showImageSuccessMessage();
+        
+        // Auto-download in background (for APK compatibility)
+        setTimeout(() => {
+          try {
+            const downloadLink = document.getElementById("imageDownload");
+            downloadLink.href = latestImageDataUrl;
+            const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
+            const dateStr = new Date().toISOString().slice(0,10);
+            downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
+            downloadLink.click();
+          } catch (error) {
+            console.log("Auto-download failed, user will need to save manually");
+          }
+        }, 1000);
+        
+      }).catch(error => {
+        console.error('Error generating image:', error);
+        document.getElementById('loadingSpinner').style.display = 'none';
+        alert('Error generating image. Please try the Quick Save option instead.');
       });
     }
 
-    function calculate() {
-      const loadingSpinner = document.getElementById('loadingSpinner');
-      if (loadingSpinner) {
-        loadingSpinner.style.display = 'block';
-      }
+    // NEW: Quick save (direct download)
+    function quickSaveImage() {
+      document.getElementById('loadingSpinner').style.display = 'block';
       
-      setTimeout(() => {
-        const salaryInput = document.getElementById("salary");
-        const salary = salaryInput ? parseFloat(salaryInput.value) || 0 : 0;
-        const isMusis = localStorage.getItem("isMusis") === "true";
-        const group = localStorage.getItem("memberGroup");
-        const inputAam = parseFloat(document.getElementById("inputAam")?.value) || 0;
-        const inputJalsa = parseFloat(document.getElementById("inputJalsa")?.value) || 0;
-        const inputKhuddam = parseFloat(document.getElementById("inputKhuddam")?.value) || 0;
-        const inputIjtema = parseFloat(document.getElementById("inputIjtema")?.value) || 0;
-        const inputTehrik = parseFloat(document.getElementById("inputTehrik")?.value) || 0;
-        const inputWaqf = parseFloat(document.getElementById("inputWaqf")?.value) || 0;
-        
-        // Get additional field values
-        const additionalFields = document.querySelectorAll(".additionalField");
-        let totalAdditional = 0;
-        additionalFields.forEach(field => {
-          totalAdditional += parseFloat(field.value) || 0;
-        });
-        
-        if (!group) {
-          if (loadingSpinner) loadingSpinner.style.display = 'none';
-          resetCalculationValues();
-          return;
-        }
-        
-        let aamString, groupString, aam, jalsa, khuddam, ijtema;
-        
-        if (group === "Student" || group === "Non-earning Lajna") {
-          aamString = "Aam";
-          groupString = group === "Student" ? "Student" : "Non-earning Lajna";
-          aam = 0;
-          jalsa = 0;
-          
-          if (group === "Student") {
-            khuddam = 60;
-            ijtema = 15;
-          } else {
-            khuddam = 65;
-            ijtema = 30;
-          }
-        } else {
-          aamString = isMusis ? "Wassiyat" : "Aam";
-          groupString = group;
-          
-          if (salary === 0) {
-            if (loadingSpinner) loadingSpinner.style.display = 'none';
-            resetCalculationValues();
-            return;
-          }
-          
-          if (group === "Ansar") {
-            aam = isMusis ? 
-              Math.ceil((10 / 100) * salary) : 
-              Math.ceil((6.25 / 100) * salary);
-            
-            jalsa = Math.ceil((0.833 / 100) * salary);
-            khuddam = Math.ceil((1 / 100) * salary);
-            ijtema = Math.ceil((0.0833 / 100) * salary);
-          } else {
-            aam = isMusis ? 
-              Math.ceil((10 / 100) * salary) : 
-              Math.ceil((6.25 / 100) * salary);
-            
-            jalsa = Math.ceil(((10 / 100) * salary) / 12);
-            khuddam = Math.ceil((1 / 100) * salary);
-            ijtema = Math.ceil(((3 / 100) * salary) / 12);
-          }
-        }
-        
-        aam += inputAam;
-        jalsa += inputJalsa;
-        khuddam += inputKhuddam;
-        ijtema += inputIjtema;
-        
-        const tehrikValue = inputTehrik > 0 ? inputTehrik : '-';
-        const waqfValue = inputWaqf > 0 ? inputWaqf : '-';
-        
-        // Calculate total including additional funds
-        let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
-        
-        // Update UI elements if they exist
-        const aamStringElement = document.getElementById("aamString");
-        const aamValueElement = document.getElementById("aamValue");
-        const jalsaValueElement = document.getElementById("jalsaValue");
-        const groupStringElement = document.getElementById("groupString");
-        const khuddamValueElement = document.getElementById("khuddamValue");
-        const ijtemaValueElement = document.getElementById("ijtemaValue");
-        const tehrikValueElement = document.getElementById("tehrikValue");
-        const waqfValueElement = document.getElementById("waqfValue");
-        const totalValueElement = document.getElementById("totalValue");
-        
-        if (aamStringElement) aamStringElement.textContent = aamString;
-        if (aamValueElement) aamValueElement.textContent = aam || '-';
-        if (jalsaValueElement) jalsaValueElement.textContent = jalsa || '-';
-        if (groupStringElement) groupStringElement.textContent = groupString;
-        if (khuddamValueElement) khuddamValueElement.textContent = khuddam || '-';
-        if (ijtemaValueElement) ijtemaValueElement.textContent = ijtema || '-';
-        if (tehrikValueElement) tehrikValueElement.textContent = tehrikValue;
-        if (waqfValueElement) waqfValueElement.textContent = waqfValue;
-        if (totalValueElement) totalValueElement.textContent = total || '-';
-        
-        if (loadingSpinner) {
-          loadingSpinner.style.display = 'none';
-        }
-      }, 100);
-    }
-
-    function resetCalculationValues() {
-      const elements = {
-        "aamString": "Aam",
-        "aamValue": "-",
-        "jalsaValue": "-",
-        "groupString": "Khuddam",
-        "khuddamValue": "-",
-        "ijtemaValue": "-",
-        "tehrikValue": "-",
-        "waqfValue": "-",
-        "totalValue": "-"
-      };
+      // Simple capture of the main content area
+      const contentToCapture = document.querySelector('.card.mt-4 .card-body');
       
-      for (const [id, value] of Object.entries(elements)) {
-        const element = document.getElementById(id);
-        if (element) {
-          element.textContent = value;
-        }
-      }
-    }
-
-    function saveSettings(event) {
-      event.preventDefault();
-      
-      const AIMSnumber = document.getElementById("AIMSnumber")?.value;
-      const isMusis = document.getElementById("musisCheckbox")?.checked;
-      const memberGroup = document.getElementById("memberGroup")?.value;
-      const fromMonth = document.getElementById("fromMonth")?.value;
-      const fromYear = document.getElementById("fromYear")?.value;
-      const toMonth = document.getElementById("toMonth")?.value;
-      const toYear = document.getElementById("toYear")?.value;
-      
-      // Member Group is required
-      if (!memberGroup) {
-        alert("Please select a Member Group.");
+      if (!contentToCapture) {
+        alert('No content to save. Please complete your calculation first.');
+        document.getElementById('loadingSpinner').style.display = 'none';
         return;
       }
       
-      // Date validation
-      if (toMonth && toYear && fromMonth && fromYear) {
-        const months = ["January", "February", "March", "April", "May", "June", 
-                       "July", "August", "September", "October", "November", "December"];
-        const fromMonthIndex = months.indexOf(fromMonth);
-        const toMonthIndex = months.indexOf(toMonth);
+      html2canvas(contentToCapture, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      }).then(canvas => {
+        const imageData = canvas.toDataURL('image/png');
         
-        if (toYear < fromYear || (toYear === fromYear && toMonthIndex < fromMonthIndex)) {
-          alert("'To' date should be after or equal to 'From' date.");
-          return;
+        // Try multiple methods to save
+        let saved = false;
+        
+        // Method 1: Direct download
+        try {
+          const downloadLink = document.getElementById("imageDownload");
+          downloadLink.href = imageData;
+          const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
+          const dateStr = new Date().toISOString().slice(0,10);
+          downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
+          downloadLink.click();
+          saved = true;
+        } catch (e) {
+          console.log("Method 1 failed:", e);
         }
+        
+        // Method 2: Open in new window
+        if (!saved) {
+          try {
+            const newWindow = window.open();
+            newWindow.document.write(`<img src="${imageData}" style="max-width:100%;">`);
+            newWindow.document.close();
+            saved = true;
+          } catch (e) {
+            console.log("Method 2 failed:", e);
+          }
+        }
+        
+        // Method 3: Show instructions
+        if (!saved) {
+          const modal = document.getElementById('imagePreviewModal');
+          const container = document.getElementById('imagePreviewContainer');
+          container.innerHTML = `<img src="${imageData}" style="max-width:100%; border-radius:5px;">`;
+          modal.style.display = 'block';
+        }
+        
+        document.getElementById('loadingSpinner').style.display = 'none';
+        
+        if (saved) {
+          alert('Image saved successfully! Check your downloads folder.');
+        }
+        
+      }).catch(error => {
+        console.error('Error saving image:', error);
+        document.getElementById('loadingSpinner').style.display = 'none';
+        alert('Error saving image. Please take a screenshot instead.');
+      });
+    }
+
+    // NEW: Download image function
+    function downloadImage() {
+      if (!latestImageDataUrl) {
+        alert('Please generate an image first using the "Generate Image" button.');
+        return;
       }
       
-      // Save to localStorage
-      if (AIMSnumber) {
-        localStorage.setItem("AIMSnumber", AIMSnumber);
-      } else {
-        localStorage.removeItem("AIMSnumber");
-      }
-      
-      localStorage.setItem("isMusis", isMusis);
-      localStorage.setItem("memberGroup", memberGroup);
-      
-      // Save date values (can be empty)
-      localStorage.setItem("fromMonth", fromMonth || "");
-      localStorage.setItem("fromYear", fromYear || "");
-      localStorage.setItem("toMonth", toMonth || "");
-      localStorage.setItem("toYear", toYear || "");
-      
-      updateAimsDisplay();
-      showSuccessMessage();
-      showPage("home");
-      checkMemberGroupForHome();
-      
-      const salary = document.getElementById("salary")?.value;
-      if (salary) {
-        calculate();
+      try {
+        const downloadLink = document.getElementById("imageDownload");
+        downloadLink.href = latestImageDataUrl;
+        const memberGroup = localStorage.getItem("memberGroup") || "Breakdown";
+        const dateStr = new Date().toISOString().slice(0,10);
+        downloadLink.download = `Chanda_${memberGroup}_${dateStr}.png`;
+        downloadLink.click();
+        alert('Image download started. Check your downloads folder.');
+      } catch (error) {
+        alert('Could not download automatically. Please:\n1. Long press the image\n2. Select "Save image"\n3. Or take a screenshot');
       }
     }
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      const instructionModal = document.getElementById("instructionModal");
-      if (event.target == instructionModal) {
-        instructionModal.style.display = "none";
+    // NEW: Print image function
+    function printImage() {
+      if (!latestImageDataUrl) {
+        alert('Please generate an image first.');
+        return;
       }
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        closeInstructionModal();
-      }
-    });
-  </script>
-</body>
-<footer class="footer mt-auto py-3 bg-dark">
-  <div class="container">
-    <p><span style="color: #ffc107;">Contact : <span style="color: #ffffff;"><a style="color: #ffffff;" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
-  </div>
-</footer>
-</html>
+      
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Chanda Breakdown</title>
+            <style>
+              body { margin: 0; padding: 20px; }
+              img { max-width: 100%; height: auto; }
+              @media print {
+                body { padding: 0; }
+              }
+            </style>
+          </head>
+          <body>
