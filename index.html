@@ -388,29 +388,10 @@
             </button>
             
             <div id="captureOutput" class="capture-output">
-              <h4 class="section-title">Chanda Breakdown Summary</h4>
-              
               <!-- AIMS Display in Capture -->
               <div id="captureAimsDisplay" class="aims-display" style="display: none;">
                 <span class="aims-title" id="captureAimsDisplayText"></span>
                 <div id="captureDateRangeDisplay" class="date-range-display"></div>
-              </div>
-              
-              <!-- Member Info -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <strong>Member Group:</strong> <span id="captureMemberGroup">-</span>
-                </div>
-                <div class="col-md-6">
-                  <strong>Member Type:</strong> <span id="captureMemberType">-</span>
-                </div>
-              </div>
-              
-              <!-- Salary Info -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <strong>Monthly Income:</strong> Rs <span id="captureSalary">-</span>
-                </div>
               </div>
               
               <!-- Chanda Breakdown Table -->
@@ -428,7 +409,7 @@
               
               <!-- Total -->
               <div class="text-right">
-                <div class="capture-total">Total Chanda: Rs <span id="captureTotal">-</span></div>
+                <div class="capture-total">Total : Rs <span id="captureTotal">-</span></div>
               </div>
               
               <!-- Notes in Capture -->
@@ -1230,11 +1211,6 @@
       const toYear = localStorage.getItem("toYear");
       const notes = document.getElementById("notesTextarea").value;
       
-      // Update capture display
-      document.getElementById("captureMemberGroup").textContent = memberGroup;
-      document.getElementById("captureMemberType").textContent = isMusis ? "Musis (Wassiyat)" : "Regular";
-      document.getElementById("captureSalary").textContent = salary ? parseInt(salary).toLocaleString() : "-";
-      
       // Update AIMS display in capture
       const captureAimsDisplay = document.getElementById("captureAimsDisplay");
       const captureAimsDisplayText = document.getElementById("captureAimsDisplayText");
@@ -1286,6 +1262,15 @@
       // Populate capture table
       const captureTableBody = document.getElementById("captureTableBody");
       captureTableBody.innerHTML = '';
+      
+      // Add title row with member group
+      const titleRow = document.createElement('tr');
+      titleRow.innerHTML = `
+        <td colspan="2" style="text-align: center; font-weight: bold; background-color: #f8f9fa; padding: 15px; font-size: 1.2rem;">
+          Chanda ${memberGroup} Breakdown
+        </td>
+      `;
+      captureTableBody.appendChild(titleRow);
       
       let captureTotal = 0;
       
