@@ -1,206 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chanda Calculator</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<style>
-.footer{position:relative;left:0;bottom:0;width:100%;background-color:#343a40;color:white;text-align:center;margin-top:auto}
-body{min-height:100vh;display:flex;flex-direction:column}
-.page-section{display:none}
-.page-section.active{display:block}
-.offline-indicator{position:fixed;top:10px;right:10px;background-color:#ffc107;color:#212529;padding:5px 10px;border-radius:4px;font-size:12px;z-index:1000;display:none}
-.loading-spinner{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001}
-.card{border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);margin-bottom:20px;border:none}
-.card-header{background-color:#343a40;color:white;border-radius:10px 10px 0 0!important}
-.btn-warning{background-color:#ffc107;border-color:#ffc107;font-weight:bold}
-.nav-link.active{color:#ffc107!important;font-weight:bold}
-.section-title{color:#343a40;border-bottom:2px solid #ffc107;padding-bottom:10px;margin-bottom:20px}
-.total-amount{font-size:1.5rem;font-weight:bold;color:#28a745}
-.info-icon{color:#ffc107;margin-left:5px;cursor:pointer}
-.notes-textarea{width:100%;min-height:80px;padding:10px;border-radius:5px;border:1px solid #ced4da;font-size:14px;resize:vertical}
-.aims-title{color:#28a745;font-size:1.2rem;font-weight:bold;margin-bottom:10px;display:block}
-.error-message{color:#dc3545;font-size:14px;margin-top:5px;display:none}
-.success-message{position:fixed;top:70px;left:50%;transform:translateX(-50%);background-color:#28a745;color:white;padding:10px 20px;border-radius:5px;z-index:1002;display:none;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
-.total-row{color:#28a745;font-weight:bold}
-.aims-display{background-color:#f8f9fa;padding:10px 15px;border-radius:5px;margin-bottom:15px;border-left:4px solid #ffc107}
-.date-range-display{font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold}
-.capture-container{margin-top:20px;padding:20px;background-color:#f8f9fa;border-radius:8px;border:1px solid #dee2e6}
-.capture-output{display:none;background-color:white;padding:20px;border:1px solid #ced4da;border-radius:5px;margin-top:15px}
-.capture-table{width:100%;margin-bottom:15px;border-collapse:collapse}
-.capture-table th{background-color:#343a40;color:white;padding:10px;text-align:left}
-.capture-table td{padding:8px;border-bottom:1px solid #dee2e6}
-.capture-total{font-weight:bold;color:#28a745;font-size:1.2rem}
-.btn-success{background-color:#28a745;border-color:#28a745}
-#imageDownload{display:none}
-@media(max-width:768px){.capture-output{padding:15px}.capture-table th,.capture-table td{padding:6px}.capture-total{font-size:1.1rem}.btn-lg{padding:10px 16px;font-size:16px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chanda Calculator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        .footer{position:relative;left:0;bottom:0;width:100%;background-color:#343a40;color:white;text-align:center;margin-top:auto}
+        body{min-height:100vh;display:flex;flex-direction:column}
+        .page-section{display:none}
+        .page-section.active{display:block}
+        .offline-indicator{position:fixed;top:10px;right:10px;background-color:#ffc107;color:#212529;padding:5px 10px;border-radius:4px;font-size:12px;z-index:1000;display:none}
+        .loading-spinner{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1001}
+        .card{border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);margin-bottom:20px;border:none}
+        .card-header{background-color:#343a40;color:white;border-radius:10px 10px 0 0!important}
+        .btn-warning{background-color:#ffc107;border-color:#ffc107;font-weight:bold}
+        .nav-link.active{color:#ffc107!important;font-weight:bold}
+        .section-title{color:#343a40;border-bottom:2px solid #ffc107;padding-bottom:10px;margin-bottom:20px}
+        .total-amount{font-size:1.5rem;font-weight:bold;color:#28a745}
+        .info-icon{color:#ffc107;margin-left:5px;cursor:pointer}
+        .notes-textarea{width:100%;min-height:80px;padding:10px;border-radius:5px;border:1px solid #ced4da;font-size:14px;resize:vertical}
+        .aims-title{color:#28a745;font-size:1.2rem;font-weight:bold;margin-bottom:10px;display:block}
+        .error-message{color:#dc3545;font-size:14px;margin-top:5px;display:none}
+        .success-message{position:fixed;top:70px;left:50%;transform:translateX(-50%);background-color:#28a745;color:white;padding:10px 20px;border-radius:5px;z-index:1002;display:none;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
+        .total-row{color:#28a745;font-weight:bold}
+        .aims-display{background-color:#f8f9fa;padding:10px 15px;border-radius:5px;margin-bottom:15px;border-left:4px solid #ffc107}
+        .date-range-display{font-size:0.9rem;color:#6c757d;margin-top:5px;font-weight:bold}
+        .capture-container{margin-top:20px;padding:20px;background-color:#f8f9fa;border-radius:8px;border:1px solid #dee2e6}
+        .capture-output{display:none;background-color:white;padding:20px;border:1px solid #ced4da;border-radius:5px;margin-top:15px}
+        .capture-table{width:100%;margin-bottom:15px;border-collapse:collapse}
+        .capture-table th{background-color:#343a40;color:white;padding:10px;text-align:left}
+        .capture-table td{padding:8px;border-bottom:1px solid #dee2e6}
+        .capture-total{font-weight:bold;color:#28a745;font-size:1.2rem}
+        .btn-success{background-color:#28a745;border-color:#28a745}
+        #imageDownload{display:none}
+        @media(max-width:768px){.capture-output{padding:15px}.capture-table th,.capture-table td{padding:6px}.capture-total{font-size:1.1rem}.btn-lg{padding:10px 16px;font-size:16px}}
+    </style>
 </head>
+
 <body>
-<div id="offlineIndicator" class="offline-indicator"><span>Offline Mode</span></div>
-<div id="loadingSpinner" class="loading-spinner"><div class="spinner-border text-warning" role="status"><span class="sr-only">Loading...</span></div></div>
-<div id="successMessage" class="success-message">Settings saved successfully!</div>
-<div id="imageSuccessMessage" class="success-message" style="background-color:#007bff">Image saved successfully!</div>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-<a class="navbar-brand" href="#"><strong>Chanda Calculator</strong></a>
-<button id="navbar" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-<div class="collapse navbar-collapse" id="navbarNav">
-<ul class="navbar-nav">
-<li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-<li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-<li class="nav-item"><a class="nav-link" href="#privacy">Privacy and Security</a></li>
-<li class="nav-item"><a class="nav-link" href="#rate">%Rate</a></li>
-<li class="nav-item"><a class="nav-link" href="#aims">Setting</a></li>
-</ul>
-</div>
-</nav>
-<div class="container mt-4">
-<div id="home" class="page-section">
-<h2 class="section-title">Chanda Calculator</h2>
-<div class="card">
-<div class="card-header"><h5 class="mb-0">Member Information</h5></div>
-<div class="card-body">
-<form id="salaryForm">
-<div class="form-group">
-<label for="salary"><strong>Monthly Income (Rs):</strong></label>
-<input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
-<div id="salaryError" class="error-message">Please set your Member Group in Settings first</div>
-</div>
-</form>
-</div>
-</div>
-<div class="card mt-4">
-<div class="card-header"><h5 class="mb-0">Chanda Breakdown</h5></div>
-<div class="card-body">
-<div id="aimsDisplay" class="aims-display" style="display:none">
-<span class="aims-title" id="aimsDisplayText"></span>
-<div id="dateRangeDisplay" class="date-range-display"></div>
-</div>
-<table id="myTable" class="table mt-4">
-<thead><tr><th>Funds</th><th>Amount (Rs)</th><th style="width:30%">Roundoff</th></tr></thead>
-<tbody>
-<tr><td id="aamString">Aam</td><td id="aamValue">-</td><td><input type="number" id="inputAam" style="width:75%" min="0" value="0"></td></tr>
-<tr><td>Jalsa</td><td id="jalsaValue">-</td><td><input type="number" id="inputJalsa" style="width:75%" min="0" value="0"></td></tr>
-<tr><td id="groupString">Khuddam</td><td id="khuddamValue">-</td><td><input type="number" id="inputKhuddam" style="width:75%" min="0" value="0"></td></tr>
-<tr><td>Ijtema</td><td id="ijtemaValue">-</td><td><input type="number" id="inputIjtema" style="width:75%" min="0" value="0"></td></tr>
-<tr><td>Tehrik-e-Jadid</td><td id="tehrikValue">-</td><td><input type="number" id="inputTehrik" style="width:75%" min="0" value="0"></td></tr>
-<tr><td>Waqf-e-Jadid</td><td id="waqfValue">-</td><td><input type="number" id="inputWaqf" style="width:75%" min="0" value="0"></td></tr>
-<tr class="total-row"><td style="font-weight:bold">Total</td><td style="font-weight:bold" id="totalValue">-</td><td style="font-weight:bold" id="additionalFund"><button id="addRowBtn" type="button" class="btn btn-warning btn-sm">Add Fund</button></td></tr>
-</tbody>
-</table>
-<div class="form-group mt-4">
-<label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
-<textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
-</div>
-<div class="capture-container">
-<div class="row">
-<div class="col-md-6 mb-2">
-<button id="saveImageBtn" class="btn btn-success btn-lg btn-block"><i class="fas fa-save"></i> Save as Image</button>
-</div>
-<div class="col-md-6 mb-2">
-<button id="shareImageBtn" class="btn btn-primary btn-lg btn-block"><i class="fas fa-share-alt"></i> Share Image</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="about" class="page-section">
-<h2 class="section-title">About</h2>
-<div class="card"><div class="card-body"><h4>About</h4><p class="text-muted">The Chanda Calculator is a user-friendly web application designed by MKA Pailles to assist the Ahmadi community members in calculating their Chanda payments accurately. Whether you're a Khuddam, Lajna, or part of the Wassiyat scheme, this tool simplifies the process and ensures transparency.</p></div></div>
-</div>
-<div id="privacy" class="page-section">
-<div class="card"><div class="card-body"><h2 class="section-title">Privacy and Security</h2><h4>Privacy and Security</h4><ul style="list-style-type:square;color:#6c757d"><li><span style="color:#6c757d">The Chanda Calculator operates entirely on your local web browser. No data is stored or transmitted to external servers.</span></li><li><span style="color:#6c757d">Your privacy is our priority. Once you close the browser, all entered information is automatically cleared.</span></li></ul></div></div>
-</div>
-<div id="rate" class="page-section">
-<h2 class="section-title">% Rate</h2>
-<div class="card"><div class="card-body">
-<h4>% Rate </h4>
-<table class="table table-striped" style="margin-right:calc(1%);width:99%">
-<thead class="thead-dark"><tr><th scope="col" style="width:6.2232%"><span style="font-size:12px">#</span></th><th scope="col" style="width:6.6023%"><span style="font-size:12px">%</span></th><th scope="col" style="width:15.017%"><span style="font-size:12px">Funds</span></th><th scope="col" style="width:72.1042%"><span style="font-size:12px">Example</span></th></tr></thead>
-<tbody>
-<tr><th scope="row" style="width:6.2232%"><span style="font-size:12px">1</span></th><td style="width:6.6023%"><span style="font-size:12px">10%</span></td><td style="width:15.017%"><span style="font-size:12px">Chanda Wassiyat Khuddam, Lajna and Ansar</span></td><td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs1000 should be paid <span style="color:rgb(226,80,65)">monthly</span></span></td></tr>
-<tr><th scope="row" style="width:6.2232%"><span style="font-size:12px">2</span></th><td style="width:6.6023%"><span style="font-size:12px">6.25%<br></span></td><td style="width:15.017%"><span style="font-size:12px">Chanda Aam Khuddam, Lajna and Ansar<br></span></td><td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs625 should be paid <span style="color:rgb(226,80,65)">monthly</span><br></span></td></tr>
-<tr><th scope="row" style="width:6.2232%"><span style="font-size:12px">3</span></th><td style="width:6.6023%"><span style="font-size:12px">10%<br></span></td><td style="width:15.017%"><span style="font-size:12px">Chanda Jalsa Khuddam, Lajna and Ansar<br></span></td><td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs1000 should be paid per <span style="color:rgb(44,130,201)">annum&nbsp;</span><strong>or&nbsp;</strong>Rs 83.33 per<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">month</span><br></span></td></tr>
-<tr><th scope="row" style="width:6.2232%"><span style="font-size:12px">4</span></th><td style="width:6.6023%"><span style="font-size:12px">1%<br></span></td><td style="width:15.017%"><span style="font-size:12px">Chanda Khuddam, Lajna and Ansar<br></span></td><td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs100 should be paid&nbsp;<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">monthly</span><br></span></td></tr>
-<tr><th scope="row" style="width:6.2232%"><span style="font-size:12px">5</span></th><td style="width:6.6023%"><span style="font-size:12px">3%<br></span></td><td style="width:15.017%"><span style="font-size:12px">Chanda Ijtema Khuddam and Lajna<br></span></td><td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs300 should be paid per <span style="color:rgb(44,130,201)">annum&nbsp;</span><strong>or&nbsp;</strong>Rs25 &nbsp;per<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">month</span><br></span></td></tr>
-<tr><th scope="row" style="width:6.2232%"><span style="font-size:12px">6</span></th><td style="width:6.6023%"><span style="font-size:12px">0.08%<br></span></td><td style="width:15.017%"><span style="font-size:12px">Chanda Ijtema Ansar<br></span></td><td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs108 should be paid per <span style="color:rgb(44,130,201)">annum&nbsp;</span><strong>or&nbsp;</strong>Rs9 &nbsp;per<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">month</span><br></span></td></tr>
-</tbody>
-</table>
-<blockquote class="blockquote"><p><span style="font-size:10px"><i>Note : Students and non-earning members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px"><i>Rs 60 for Chanda Khuddam/Lajna</i></span><span style="font-size:10px"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px"><i>Rs 15 for Chanda Ijtama.</i></span></p></blockquote>
-</div></div>
-</div>
-<div id="aims" class="page-section">
-<div class="card"><div class="card-body">
-<h2 class="section-title">Settings</h2>
-<form id="settingsForm">
-<div class="form-group"><label for="AIMSnumber">Aims Number</label><input type="number" class="form-control" id="AIMSnumber" name="number"></div>
-<div class="form-group">
-<label><strong>Member Type:</strong></label>
-<div class="form-check"><input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox"><label class="form-check-label" for="musisCheckbox">Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i></label></div>
-</div>
-<div class="form-group">
-<label for="memberGroup"><strong>Member Group:</strong></label>
-<select class="form-control" id="memberGroup" name="group" required>
-<option value="">Select Member Group</option>
-<option value="Khuddam">Khuddam</option>
-<option value="Lajna">Lajna</option>
-<option value="Non-earning Lajna">Non-earning Lajna</option>
-<option value="Ansar">Ansar</option>
-<option value="Student">Student</option>
-</select>
-</div>
-<div class="form-group">
-<label><strong>Date Range:</strong></label>
-<div class="row"><div class="col-md-6"><label>From Month:</label><select class="form-control" id="fromMonth"><option value="">Select Month</option><option value="January">January</option><option value="February">February</option><option value="March">March</option><option value="April">April</option><option value="May">May</option><option value="June">June</option><option value="July">July</option><option value="August">August</option><option value="September">September</option><option value="October">October</option><option value="November">November</option><option value="December">December</option></select></div><div class="col-md-6"><label>From Year:</label><select class="form-control" id="fromYear"></select></div></div>
-<div class="row mt-2"><div class="col-md-6"><label>To Month (Optional):</label><select class="form-control" id="toMonth"><option value="">Select Month</option><option value="January">January</option><option value="February">February</option><option value="March">March</option><option value="April">April</option><option value="May">May</option><option value="June">June</option><option value="July">July</option><option value="August">August</option><option value="September">September</option><option value="October">October</option><option value="November">November</option><option value="December">December</option></select></div><div class="col-md-6"><label>To Year (Optional):</label><select class="form-control" id="toYear"></select></div></div>
-<small class="form-text text-muted">If "To" date is not set, only the "From" month will be displayed.</small>
-</div>
-<br><button id="saveSettings" type="submit" style="width:100%" class="btn btn-warning">Save Settings</button>
-</form>
-<div class="container mt-4"><div id="errorMessages" class="mt-3 text-danger"></div><div id="successMessages" class="mt-3 text-success"></div></div>
-</div></div>
-</div>
-</div>
-<a id="imageDownload" download="Chanda_Breakdown.png"></a>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-<script>
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').then(function(registration){console.log('ServiceWorker registration successful with scope: ',registration.scope)}).catch(function(error){console.log('ServiceWorker registration failed: ',error)})})}
-window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus)
-function updateOnlineStatus(){const e=document.getElementById('offlineIndicator');navigator.onLine?e.style.display='none':e.style.display='block'}
-document.addEventListener("DOMContentLoaded",function(){initApp();updateOnlineStatus()})
-function initApp(){loadSavedData();initNavigation();initFormControls();initEventListeners();initYearDropdowns();checkMemberGroup();updateAimsDisplay()}
-function initNavigation(){const e=["home","about","privacy","rate","aims"];let t="home";localStorage.getItem("memberGroup")||(t="aims")
-function o(o){e.forEach(function(e){document.getElementById(e).classList.remove("active")});document.getElementById(o).classList.add("active");document.querySelectorAll('.nav-link').forEach(function(e){e.classList.remove('active');e.getAttribute('href')===`#${o}`&&e.classList.add('active')});window.location.hash=o;"home"===o&&checkMemberGroupForHome()}
-const a=window.location.hash?window.location.hash.substr(1):t;o(a);window.addEventListener("hashchange",function(){const t=window.location.hash.substr(1);e.includes(t)&&(o(t),document.getElementById("navbar").click())})}
-function initYearDropdowns(){const e=new Date().getFullYear(),t=document.getElementById("fromYear"),o=document.getElementById("toYear");t.innerHTML='',o.innerHTML='';for(let a=e;a>=e-1;a--){const e=document.createElement("option");e.value=a,e.textContent=a,t.appendChild(e);const n=document.createElement("option");n.value=a,n.textContent=a,o.appendChild(n)}t.value=e,o.value=e}
-function checkMemberGroup(){localStorage.getItem("memberGroup")||showPage("aims")}
-function checkMemberGroupForHome(){const e=localStorage.getItem("memberGroup"),t=document.getElementById("salary"),o=document.getElementById("salaryError");e?(t.disabled=!1,t.placeholder="Enter your monthly income",o.style.display="none"):(t.disabled=!0,t.placeholder="Please set Member Group in Settings first",o.style.display="block")}
-function showPage(e){["home","about","privacy","rate","aims"].forEach(function(t){document.getElementById(t).classList.remove("active")});document.getElementById(e).classList.add("active");document.querySelectorAll('.nav-link').forEach(function(t){t.classList.remove('active');t.getAttribute('href')===`#${e}`&&t.classList.add('active')})}
-function initFormControls(){}
-function loadSavedData(){localStorage.getItem("AIMSnumber")&&(document.getElementById("AIMSnumber").value=localStorage.getItem("AIMSnumber"));localStorage.getItem("chandaNotes")&&(document.getElementById("notesTextarea").value=localStorage.getItem("chandaNotes"));"true"===localStorage.getItem("isMusis")&&(document.getElementById("musisCheckbox").checked=!0);localStorage.getItem("memberGroup")&&(document.getElementById("memberGroup").value=localStorage.getItem("memberGroup"));localStorage.getItem("fromMonth")&&(document.getElementById("fromMonth").value=localStorage.getItem("fromMonth"));localStorage.getItem("fromYear")&&(document.getElementById("fromYear").value=localStorage.getItem("fromYear"));localStorage.getItem("toMonth")&&(document.getElementById("toMonth").value=localStorage.getItem("toMonth"));localStorage.getItem("toYear")&&(document.getElementById("toYear").value=localStorage.getItem("toYear"))}
-function initEventListeners(){document.getElementById("memberGroup").addEventListener("change",function(){console.log("Member group changed to:",this.value)});document.getElementById("addRowBtn").addEventListener("click",addRow);document.getElementById("settingsForm").addEventListener("submit",saveSettings);document.getElementById("salary").addEventListener("input",calculate);document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf").forEach(function(e){e.addEventListener("input",calculate)});const e=document.getElementById("notesTextarea");e.addEventListener("blur",saveNotes),e.addEventListener("keyup",function(e){e.ctrlKey&&'s'===e.key&&(e.preventDefault(),saveNotes())});document.getElementById("saveImageBtn").addEventListener("click",saveAsImage);document.getElementById("shareImageBtn").addEventListener("click",shareImage)}
-function updateAimsDisplay(){const e=localStorage.getItem("AIMSnumber"),t=localStorage.getItem("fromMonth"),o=localStorage.getItem("fromYear"),a=localStorage.getItem("toMonth"),n=localStorage.getItem("toYear"),i=document.getElementById("aimsDisplay"),d=document.getElementById("aimsDisplayText"),c=document.getElementById("dateRangeDisplay");if(e){d.textContent=`AIMS: ${e}`,i.style.display="block";let e='';if(t&&o)if(a&&n){if(t===a&&o===n)e=`For: ${t} ${o}`;else e=`From: ${t} ${o} to ${a} ${n}`}else e=`For: ${t} ${o}`;else{const t=new Date,o=t.toLocaleString('default',{month:'long'}),a=t.getFullYear();e=`For: ${o} ${a}`}c.textContent=e}else i.style.display="none"}
-function saveNotes(){localStorage.setItem("chandaNotes",document.getElementById("notesTextarea").value)}
-function showSuccessMessage(){const e=document.getElementById("successMessage");e.style.display='block',setTimeout(function(){e.style.display='none'},5e3)}
-function showImageSuccessMessage(){const e=document.getElementById("imageSuccessMessage");e.style.display='block',setTimeout(function(){e.style.display='none'},5e3)}
-function addRow(){const e=document.getElementById("myTable"),t=e.insertRow(e.rows.length-1),o=t.insertCell(),a=t.insertCell(),n=t.insertCell(),i=document.createElement("input");i.type="text",i.style.width="100%",i.placeholder="Fund Name",i.className="form-control";const d=document.createElement("input");d.type="number",d.style.width="75%",d.min="0",d.className="additionalField form-control",d.value="0",d.addEventListener("input",calculate),o.appendChild(i),a.appendChild(d),n.innerHTML="&nbsp;"}
-function calculate(){document.getElementById('loadingSpinner').style.display='block',setTimeout(()=>{const e=parseFloat(document.getElementById("salary").value)||0,t="true"===localStorage.getItem("isMusis"),o=localStorage.getItem("memberGroup"),a=parseFloat(document.getElementById("inputAam").value)||0,n=parseFloat(document.getElementById("inputJalsa").value)||0,i=parseFloat(document.getElementById("inputKhuddam").value)||0,d=parseFloat(document.getElementById("inputIjtema").value)||0,c=parseFloat(document.getElementById("inputTehrik").value)||0,r=parseFloat(document.getElementById("inputWaqf").value)||0,s=document.querySelectorAll(".additionalField");let l=0;s.forEach(function(e){l+=parseFloat(e.value)||0});if(!o)return document.getElementById('loadingSpinner').style.display='none',void resetCalculationValues();let u,m,p,g,f;if("Student"===o||"Non-earning Lajna"===o){u="Aam",m="Student"===o?"Student":"Non-earning Lajna",p=0,g=0,"Student"===o?(f=60,l=15):(f=65,l=30)}else{if(u=t?"Wassiyat":"Aam",m=o,0===e)return document.getElementById('loadingSpinner').style.display='none',void resetCalculationValues();"Ansar"===o?p=t?Math.ceil(10/100*e):Math.ceil(6.25/100*e),g=Math.ceil(.833/100*e),f=Math.ceil(1/100*e),l=Math.ceil(.0833/100*e):(p=t?Math.ceil(10/100*e):Math.ceil(6.25/100*e),g=Math.ceil(10/100*e/12),f=Math.ceil(1/100*e),l=Math.ceil(3/100*e/12))}p+=a,g+=n,f+=i,l+=d;const h=c>0?c:'-',v=r>0?r:'-',b=p+g+f+l+c+r;document.getElementById("aamString").textContent=u,document.getElementById("aamValue").textContent=p||'-',document.getElementById("jalsaValue").textContent=g||'-',document.getElementById("groupString").textContent=m,document.getElementById("khuddamValue").textContent=f||'-',document.getElementById("ijtemaValue").textContent=l||'-',document.getElementById("tehrikValue").textContent=h,document.getElementById("waqfValue").textContent=v,document.getElementById("totalValue").textContent=b||'-',document.getElementById('loadingSpinner').style.display='none'},100)}
-function resetCalculationValues(){document.getElementById("aamString").textContent="Aam",document.getElementById("aamValue").textContent="-",document.getElementById("jalsaValue").textContent="-",document.getElementById("groupString").textContent="Khuddam",document.getElementById("khuddamValue").textContent="-",document.getElementById("ijtemaValue").textContent="-",document.getElementById("tehrikValue").textContent="-",document.getElementById("waqfValue").textContent="-",document.getElementById("totalValue").textContent="-"}
-function saveSettings(e){e.preventDefault();const t=document.getElementById("AIMSnumber").value,o=document.getElementById("musisCheckbox").checked,a=document.getElementById("memberGroup").value,n=document.getElementById("fromMonth").value,i=document.getElementById("fromYear").value,d=document.getElementById("toMonth").value,c=document.getElementById("toYear").value;if(!a)return void alert("Please select a Member Group.");if(t&&(!n||!i))return void alert("Please select at least the 'From' month and year when entering an AIMS number.");if(d&&c&&n&&i){const e=["January","February","March","April","May","June","July","August","September","October","November","December"],t=e.indexOf(n),o=e.indexOf(d);if(c<i||c===i&&o<t)return void alert("'To' date should be after or equal to 'From' date.")}t?localStorage.setItem("AIMSnumber",t):localStorage.removeItem("AIMSnumber"),localStorage.setItem("isMusis",o),localStorage.setItem("memberGroup",a),n&&localStorage.setItem("fromMonth",n),i&&localStorage.setItem("fromYear",i),d&&localStorage.setItem("toMonth",d),c&&localStorage.setItem("toYear",c),updateAimsDisplay(),showSuccessMessage(),showPage("home"),checkMemberGroupForHome();const r=document.getElementById("salary").value;r&&calculate()}
-function createCleanCapture(){const e=document.createElement("div");e.style.backgroundColor="white",e.style.padding="20px",e.style.borderRadius="5px",e.style.maxWidth="600px",e.style.margin="0 auto";const t=localStorage.getItem("memberGroup")||"-",o=localStorage.getItem("AIMSnumber"),a=localStorage.getItem("fromMonth"),n=localStorage.getItem("fromYear"),i=localStorage.getItem("toMonth"),d=localStorage.getItem("toYear"),c=document.getElementById("notesTextarea").value;let r='';o&&(r+=`<div class="aims-display"><span class="aims-title">AIMS: ${o}</span>`,(a&&n)&&(i&&d?a===i&&n===d?r+=`<div class="date-range-display">For: ${a} ${n}</div>`:r+=`<div class="date-range-display">From: ${a} ${n} to ${i} ${d}</div>`:r+=`<div class="date-range-display">For: ${a} ${n}</div>`),r+='</div>');let s='',l=0;document.querySelectorAll("#myTable tbody tr").forEach(function(e,o){if(o===document.querySelectorAll("#myTable tbody tr").length-1)return;const t=e.cells[0].textContent,a=e.cells[1].textContent;'-'!==a&&t&&t.trim()!==''&&(l+=parseFloat(a.replace(/,/g,''))||0,s+=`<tr><td>${t}</td><td>${a}</td></tr>`)});const u=document.createElement("table");u.className="capture-table",u.innerHTML=`<thead><tr><th>Funds</th><th>Amount (Rs)</th></tr></thead><tbody><tr><td colspan="2" style="text-align:center;font-weight:bold;background-color:#f8f9fa;padding:15px;font-size:1.2rem">Chanda ${t} Breakdown</td></tr>${s}</tbody>`;const m=document.createElement("div");m.className="text-right",m.innerHTML=`<div class="capture-total">Total : Rs ${l.toLocaleString()}</div>`;const p=document.createElement("div");p.innerHTML=`<strong>Notes:</strong><div class="mt-2 p-2 bg-light rounded" style="min-height:50px">${c.trim()?c.replace(/\n/g,'<br>'):'<i>No notes added</i>'}</div>`;return e.innerHTML=r,e.appendChild(u),e.appendChild(m),e.appendChild(p),e}
-function saveAsImage(){document.getElementById('loadingSpinner').style.display='block';const e=createCleanCapture();document.body.appendChild(e);html2canvas(e,{backgroundColor:'#ffffff',scale:2,useCORS:!0,logging:!1,width:e.offsetWidth,height:e.offsetHeight}).then(function(t){const o=t.toDataURL('image/png'),a=document.getElementById("imageDownload");a.href=o,a.download=`Chanda_${localStorage.getItem("memberGroup")||"Breakdown"}_${new Date().toISOString().slice(0,10)}.png`,a.click(),document.body.removeChild(e),document.getElementById('loadingSpinner').style.display='none',showImageSuccessMessage()}).catch(function(e){console.error('Error generating image:',e),document.getElementById('loadingSpinner').style.display='none',document.body.removeChild(e),alert('Error generating image. Please try again.')})}
-function shareImage(){document.getElementById('loadingSpinner').style.display='block';const e=createCleanCapture();document.body.appendChild(e);html2canvas(e,{backgroundColor:'#ffffff',scale:2,useCORS:!0,logging:!1,width:e.offsetWidth,height:e.offsetHeight}).then(function(t){const o=t.toDataURL('image/png');document.body.removeChild(e);fetch(o).then(function(e){return e.blob()}).then(function(e){const t=new File([e],`Chanda_${localStorage.getItem("memberGroup")||"Breakdown"}.png`,{type:'image/png'});navigator.share({files:[t],title:'Chanda Breakdown',text:'My Chanda calculation breakdown'}).catch(function(e){console.log('Sharing failed:',e),saveAsImage()})}).catch(function(e){console.log('Blob conversion failed:',e),saveAsImage()});document.getElementById('loadingSpinner').style.display='none'}).catch(function(e){console.error('Error generating image:',e),document.getElementById('loadingSpinner').style.display='none',document.body.removeChild(e),alert('Error generating image. Please try again.')})}
-</script>
+    <div id="offlineIndicator" class="offline-indicator"><span>Offline Mode</span></div>
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner-border text-warning" role="status"><span class="sr-only">Loading...</span></div>
+    </div>
+    <div id="successMessage" class="success-message">Settings saved successfully!</div>
+    <div id="imageSuccessMessage" class="success-message" style="background-color:#007bff">Image saved successfully!</div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#"><strong>Chanda Calculator</strong></a>
+        <button id="navbar" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#privacy">Privacy and Security</a></li>
+                <li class="nav-item"><a class="nav-link" href="#rate">%Rate</a></li>
+                <li class="nav-item"><a class="nav-link" href="#aims">Setting</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <div id="home" class="page-section">
+            <h2 class="section-title">Chanda Calculator</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Member Information</h5></div>
+                <div class="card-body">
+                    <form id="salaryForm">
+                        <div class="form-group">
+                            <label for="salary"><strong>Monthly Income (Rs):</strong></label>
+                            <input type="number" id="salary" class="form-control" min="0" placeholder="Enter your monthly income" required>
+                            <div id="salaryError" class="error-message">Please set your Member Group in Settings first</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Chanda Breakdown</h5></div>
+                <div class="card-body">
+                    <div id="aimsDisplay" class="aims-display" style="display:none">
+                        <span class="aims-title" id="aimsDisplayText"></span>
+                        <div id="dateRangeDisplay" class="date-range-display"></div>
+                    </div>
+                    <table id="myTable" class="table mt-4">
+                        <thead>
+                            <tr>
+                                <th>Funds</th>
+                                <th>Amount (Rs)</th>
+                                <th style="width:30%">Roundoff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="aamString">Aam</td>
+                                <td id="aamValue">-</td>
+                                <td>
+                                    <input type="number" id="inputAam" style="width:75%" min="0" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jalsa</td>
+                                <td id="jalsaValue">-</td>
+                                <td>
+                                    <input type="number" id="inputJalsa" style="width:75%" min="0" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td id="groupString">Khuddam</td>
+                                <td id="khuddamValue">-</td>
+                                <td>
+                                    <input type="number" id="inputKhuddam" style="width:75%" min="0" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ijtema</td>
+                                <td id="ijtemaValue">-</td>
+                                <td>
+                                    <input type="number" id="inputIjtema" style="width:75%" min="0" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Tehrik-e-Jadid</td>
+                                <td id="tehrikValue">-</td>
+                                <td>
+                                    <input type="number" id="inputTehrik" style="width:75%" min="0" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Waqf-e-Jadid</td>
+                                <td id="waqfValue">-</td>
+                                <td>
+                                    <input type="number" id="inputWaqf" style="width:75%" min="0" value="0">
+                                </td>
+                            </tr>
+                            <tr class="total-row">
+                                <td style="font-weight:bold">Total</td>
+                                <td style="font-weight:bold" id="totalValue">-</td>
+                                <td style="font-weight:bold" id="additionalFund">
+                                    <button id="addRowBtn" type="button" class="btn btn-warning btn-sm">Add Fund</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group mt-4">
+                        <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
+                        <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
+                    </div>
+                    <div class="capture-container">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <button id="saveImageBtn" class="btn btn-success btn-lg btn-block"><i class="fas fa-save"></i> Save as Image</button>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <button id="shareImageBtn" class="btn btn-primary btn-lg btn-block"><i class="fas fa-share-alt"></i> Share Image</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="about" class="page-section">
+            <h2 class="section-title">About</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h4>About</h4>
+                    <p class="text-muted">The Chanda Calculator is a user-friendly web application designed by MKA Pailles to assist the Ahmadi community members in calculating their Chanda payments accurately. Whether you're a Khuddam, Lajna, or part of the Wassiyat scheme,
+                        this tool simplifies the process and ensures transparency.</p>
+                </div>
+            </div>
+        </div>
+        <div id="privacy" class="page-section">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="section-title">Privacy and Security</h2>
+                    <h4>Privacy and Security</h4>
+                    <ul style="list-style-type:square;color:#6c757d">
+                        <li><span style="color:#6c757d">The Chanda Calculator operates entirely on your local web browser. No data is stored or transmitted to external servers.</span></li>
+                        <li><span style="color:#6c757d">Your privacy is our priority. Once you close the browser, all entered information is automatically cleared.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="rate" class="page-section">
+            <h2 class="section-title">% Rate</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h4>% Rate </h4>
+                    <table class="table table-striped" style="margin-right:calc(1%);width:99%">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col" style="width:6.2232%"><span style="font-size:12px">#</span></th>
+                                <th scope="col" style="width:6.6023%"><span style="font-size:12px">%</span></th>
+                                <th scope="col" style="width:15.017%"><span style="font-size:12px">Funds</span></th>
+                                <th scope="col" style="width:72.1042%"><span style="font-size:12px">Example</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width:6.2232%"><span style="font-size:12px">1</span></th>
+                                <td style="width:6.6023%"><span style="font-size:12px">10%</span></td>
+                                <td style="width:15.017%"><span style="font-size:12px">Chanda Wassiyat Khuddam, Lajna and Ansar</span></td>
+                                <td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs1000 should be paid <span style="color:rgb(226,80,65)">monthly</span></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width:6.2232%"><span style="font-size:12px">2</span></th>
+                                <td style="width:6.6023%"><span style="font-size:12px">6.25%<br></span></td>
+                                <td style="width:15.017%"><span style="font-size:12px">Chanda Aam Khuddam, Lajna and Ansar<br></span></td>
+                                <td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs625 should be paid <span style="color:rgb(226,80,65)">monthly</span>
+                                    <br>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width:6.2232%"><span style="font-size:12px">3</span></th>
+                                <td style="width:6.6023%"><span style="font-size:12px">10%<br></span></td>
+                                <td style="width:15.017%"><span style="font-size:12px">Chanda Jalsa Khuddam, Lajna and Ansar<br></span></td>
+                                <td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs1000 should be paid per <span style="color:rgb(44,130,201)">annum&nbsp;</span><strong>or&nbsp;</strong>Rs 83.33 per<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">month</span>
+                                    <br>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width:6.2232%"><span style="font-size:12px">4</span></th>
+                                <td style="width:6.6023%"><span style="font-size:12px">1%<br></span></td>
+                                <td style="width:15.017%"><span style="font-size:12px">Chanda Khuddam, Lajna and Ansar<br></span></td>
+                                <td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs100 should be paid&nbsp;<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">monthly</span>
+                                    <br>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width:6.2232%"><span style="font-size:12px">5</span></th>
+                                <td style="width:6.6023%"><span style="font-size:12px">3%<br></span></td>
+                                <td style="width:15.017%"><span style="font-size:12px">Chanda Ijtema Khuddam and Lajna<br></span></td>
+                                <td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs300 should be paid per <span style="color:rgb(44,130,201)">annum&nbsp;</span><strong>or&nbsp;</strong>Rs25 &nbsp;per<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">month</span>
+                                    <br>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width:6.2232%"><span style="font-size:12px">6</span></th>
+                                <td style="width:6.6023%"><span style="font-size:12px">0.08%<br></span></td>
+                                <td style="width:15.017%"><span style="font-size:12px">Chanda Ijtema Ansar<br></span></td>
+                                <td style="width:72.1042%"><span style="font-size:12px">For a monthly salary of Rs10 000, Rs108 should be paid per <span style="color:rgb(44,130,201)">annum&nbsp;</span><strong>or&nbsp;</strong>Rs9 &nbsp;per<strong>&nbsp;</strong><span style="color:rgb(226,80,65)">month</span>
+                                    <br>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <blockquote class="blockquote">
+                        <p><span style="font-size:10px"><i>Note : Students and non-earning members are required to pay a monthly fee of&nbsp;</i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px"><i>Rs 60 for Chanda Khuddam/Lajna</i></span>
+                            <span
+                            style="font-size:10px"><i> and </i></span><span style="background-color:#212121;color:rgb(250,197,28);font-size:10px"><i>Rs 15 for Chanda Ijtama.</i></span></p>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        <div id="aims" class="page-section">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="section-title">Settings</h2>
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label for="AIMSnumber">Aims Number</label>
+                            <input type="number" class="form-control" id="AIMSnumber" name="number">
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Member Type:</strong></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
+                                <label class="form-check-label" for="musisCheckbox">Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="memberGroup"><strong>Member Group:</strong></label>
+                            <select class="form-control" id="memberGroup" name="group" required>
+                                <option value="">Select Member Group</option>
+                                <option value="Khuddam">Khuddam</option>
+                                <option value="Lajna">Lajna</option>
+                                <option value="Non-earning Lajna">Non-earning Lajna</option>
+                                <option value="Ansar">Ansar</option>
+                                <option value="Student">Student</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Date Range:</strong></label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>From Month:</label>
+                                    <select class="form-control" id="fromMonth">
+                                        <option value="">Select Month</option>
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>From Year:</label>
+                                    <select class="form-control" id="fromYear"></select>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <label>To Month (Optional):</label>
+                                    <select class="form-control" id="toMonth">
+                                        <option value="">Select Month</option>
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>To Year (Optional):</label>
+                                    <select class="form-control" id="toYear"></select>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">If "To" date is not set, only the "From" month will be displayed.</small>
+                        </div>
+                        <br>
+                        <button id="saveSettings" type="submit" style="width:100%" class="btn btn-warning">Save Settings</button>
+                    </form>
+                    <div class="container mt-4">
+                        <div id="errorMessages" class="mt-3 text-danger"></div>
+                        <div id="successMessages" class="mt-3 text-success"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a id="imageDownload" download="Chanda_Breakdown.png"></a>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').then(function(registration){console.log('ServiceWorker registration successful with scope: ',registration.scope)}).catch(function(error){console.log('ServiceWorker registration failed: ',error)})})}
+        window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus)
+        function updateOnlineStatus(){const e=document.getElementById('offlineIndicator');navigator.onLine?e.style.display='none':e.style.display='block'}
+        document.addEventListener("DOMContentLoaded",function(){initApp();updateOnlineStatus()})
+        function initApp(){loadSavedData();initNavigation();initFormControls();initEventListeners();initYearDropdowns();checkMemberGroup();updateAimsDisplay()}
+        function initNavigation(){const e=["home","about","privacy","rate","aims"];let t="home";localStorage.getItem("memberGroup")||(t="aims")
+        function o(o){e.forEach(function(e){document.getElementById(e).classList.remove("active")});document.getElementById(o).classList.add("active");document.querySelectorAll('.nav-link').forEach(function(e){e.classList.remove('active');e.getAttribute('href')===`#${o}`&&e.classList.add('active')});window.location.hash=o;"home"===o&&checkMemberGroupForHome()}
+        const a=window.location.hash?window.location.hash.substr(1):t;o(a);window.addEventListener("hashchange",function(){const t=window.location.hash.substr(1);e.includes(t)&&(o(t),document.getElementById("navbar").click())})}
+        function initYearDropdowns(){const e=new Date().getFullYear(),t=document.getElementById("fromYear"),o=document.getElementById("toYear");t.innerHTML='',o.innerHTML='';for(let a=e;a>=e-1;a--){const e=document.createElement("option");e.value=a,e.textContent=a,t.appendChild(e);const n=document.createElement("option");n.value=a,n.textContent=a,o.appendChild(n)}t.value=e,o.value=e}
+        function checkMemberGroup(){localStorage.getItem("memberGroup")||showPage("aims")}
+        function checkMemberGroupForHome(){const e=localStorage.getItem("memberGroup"),t=document.getElementById("salary"),o=document.getElementById("salaryError");e?(t.disabled=!1,t.placeholder="Enter your monthly income",o.style.display="none"):(t.disabled=!0,t.placeholder="Please set Member Group in Settings first",o.style.display="block")}
+        function showPage(e){["home","about","privacy","rate","aims"].forEach(function(t){document.getElementById(t).classList.remove("active")});document.getElementById(e).classList.add("active");document.querySelectorAll('.nav-link').forEach(function(t){t.classList.remove('active');t.getAttribute('href')===`#${e}`&&t.classList.add('active')})}
+        function initFormControls(){}
+        function loadSavedData(){localStorage.getItem("AIMSnumber")&&(document.getElementById("AIMSnumber").value=localStorage.getItem("AIMSnumber"));localStorage.getItem("chandaNotes")&&(document.getElementById("notesTextarea").value=localStorage.getItem("chandaNotes"));"true"===localStorage.getItem("isMusis")&&(document.getElementById("musisCheckbox").checked=!0);localStorage.getItem("memberGroup")&&(document.getElementById("memberGroup").value=localStorage.getItem("memberGroup"));localStorage.getItem("fromMonth")&&(document.getElementById("fromMonth").value=localStorage.getItem("fromMonth"));localStorage.getItem("fromYear")&&(document.getElementById("fromYear").value=localStorage.getItem("fromYear"));localStorage.getItem("toMonth")&&(document.getElementById("toMonth").value=localStorage.getItem("toMonth"));localStorage.getItem("toYear")&&(document.getElementById("toYear").value=localStorage.getItem("toYear"))}
+        function initEventListeners(){document.getElementById("memberGroup").addEventListener("change",function(){console.log("Member group changed to:",this.value)});document.getElementById("addRowBtn").addEventListener("click",addRow);document.getElementById("settingsForm").addEventListener("submit",saveSettings);document.getElementById("salary").addEventListener("input",calculate);document.querySelectorAll("#inputAam, #inputJalsa, #inputKhuddam, #inputIjtema, #inputTehrik, #inputWaqf").forEach(function(e){e.addEventListener("input",calculate)});const e=document.getElementById("notesTextarea");e.addEventListener("blur",saveNotes),e.addEventListener("keyup",function(e){e.ctrlKey&&'s'===e.key&&(e.preventDefault(),saveNotes())});document.getElementById("saveImageBtn").addEventListener("click",saveAsImage);document.getElementById("shareImageBtn").addEventListener("click",shareImage)}
+        function updateAimsDisplay(){const e=localStorage.getItem("AIMSnumber"),t=localStorage.getItem("fromMonth"),o=localStorage.getItem("fromYear"),a=localStorage.getItem("toMonth"),n=localStorage.getItem("toYear"),i=document.getElementById("aimsDisplay"),d=document.getElementById("aimsDisplayText"),c=document.getElementById("dateRangeDisplay");if(e){d.textContent=`AIMS: ${e}`,i.style.display="block";let e='';if(t&&o)if(a&&n){if(t===a&&o===n)e=`For: ${t} ${o}`;else e=`From: ${t} ${o} to ${a} ${n}`}else e=`For: ${t} ${o}`;else{const t=new Date,o=t.toLocaleString('default',{month:'long'}),a=t.getFullYear();e=`For: ${o} ${a}`}c.textContent=e}else i.style.display="none"}
+        function saveNotes(){localStorage.setItem("chandaNotes",document.getElementById("notesTextarea").value)}
+        function showSuccessMessage(){const e=document.getElementById("successMessage");e.style.display='block',setTimeout(function(){e.style.display='none'},5e3)}
+        function showImageSuccessMessage(){const e=document.getElementById("imageSuccessMessage");e.style.display='block',setTimeout(function(){e.style.display='none'},5e3)}
+        function addRow(){const e=document.getElementById("myTable"),t=e.insertRow(e.rows.length-1),o=t.insertCell(),a=t.insertCell(),n=t.insertCell(),i=document.createElement("input");i.type="text",i.style.width="100%",i.placeholder="Fund Name",i.className="form-control";const d=document.createElement("input");d.type="number",d.style.width="75%",d.min="0",d.className="additionalField form-control",d.value="0",d.addEventListener("input",calculate),o.appendChild(i),a.appendChild(d),n.innerHTML="&nbsp;"}
+        function calculate(){document.getElementById('loadingSpinner').style.display='block',setTimeout(()=>{const e=parseFloat(document.getElementById("salary").value)||0,t="true"===localStorage.getItem("isMusis"),o=localStorage.getItem("memberGroup"),a=parseFloat(document.getElementById("inputAam").value)||0,n=parseFloat(document.getElementById("inputJalsa").value)||0,i=parseFloat(document.getElementById("inputKhuddam").value)||0,d=parseFloat(document.getElementById("inputIjtema").value)||0,c=parseFloat(document.getElementById("inputTehrik").value)||0,r=parseFloat(document.getElementById("inputWaqf").value)||0,s=document.querySelectorAll(".additionalField");let l=0;s.forEach(function(e){l+=parseFloat(e.value)||0});if(!o)return document.getElementById('loadingSpinner').style.display='none',void resetCalculationValues();let u,m,p,g,f;if("Student"===o||"Non-earning Lajna"===o){u="Aam",m="Student"===o?"Student":"Non-earning Lajna",p=0,g=0,"Student"===o?(f=60,l=15):(f=65,l=30)}else{if(u=t?"Wassiyat":"Aam",m=o,0===e)return document.getElementById('loadingSpinner').style.display='none',void resetCalculationValues();"Ansar"===o?p=t?Math.ceil(10/100*e):Math.ceil(6.25/100*e),g=Math.ceil(.833/100*e),f=Math.ceil(1/100*e),l=Math.ceil(.0833/100*e):(p=t?Math.ceil(10/100*e):Math.ceil(6.25/100*e),g=Math.ceil(10/100*e/12),f=Math.ceil(1/100*e),l=Math.ceil(3/100*e/12))}p+=a,g+=n,f+=i,l+=d;const h=c>0?c:'-',v=r>0?r:'-',b=p+g+f+l+c+r;document.getElementById("aamString").textContent=u,document.getElementById("aamValue").textContent=p||'-',document.getElementById("jalsaValue").textContent=g||'-',document.getElementById("groupString").textContent=m,document.getElementById("khuddamValue").textContent=f||'-',document.getElementById("ijtemaValue").textContent=l||'-',document.getElementById("tehrikValue").textContent=h,document.getElementById("waqfValue").textContent=v,document.getElementById("totalValue").textContent=b||'-',document.getElementById('loadingSpinner').style.display='none'},100)}
+        function resetCalculationValues(){document.getElementById("aamString").textContent="Aam",document.getElementById("aamValue").textContent="-",document.getElementById("jalsaValue").textContent="-",document.getElementById("groupString").textContent="Khuddam",document.getElementById("khuddamValue").textContent="-",document.getElementById("ijtemaValue").textContent="-",document.getElementById("tehrikValue").textContent="-",document.getElementById("waqfValue").textContent="-",document.getElementById("totalValue").textContent="-"}
+        function saveSettings(e){e.preventDefault();const t=document.getElementById("AIMSnumber").value,o=document.getElementById("musisCheckbox").checked,a=document.getElementById("memberGroup").value,n=document.getElementById("fromMonth").value,i=document.getElementById("fromYear").value,d=document.getElementById("toMonth").value,c=document.getElementById("toYear").value;if(!a)return void alert("Please select a Member Group.");if(t&&(!n||!i))return void alert("Please select at least the 'From' month and year when entering an AIMS number.");if(d&&c&&n&&i){const e=["January","February","March","April","May","June","July","August","September","October","November","December"],t=e.indexOf(n),o=e.indexOf(d);if(c<i||c===i&&o<t)return void alert("'To' date should be after or equal to 'From' date.")}t?localStorage.setItem("AIMSnumber",t):localStorage.removeItem("AIMSnumber"),localStorage.setItem("isMusis",o),localStorage.setItem("memberGroup",a),n&&localStorage.setItem("fromMonth",n),i&&localStorage.setItem("fromYear",i),d&&localStorage.setItem("toMonth",d),c&&localStorage.setItem("toYear",c),updateAimsDisplay(),showSuccessMessage(),showPage("home"),checkMemberGroupForHome();const r=document.getElementById("salary").value;r&&calculate()}
+        function createCleanCapture(){const e=document.createElement("div");e.style.backgroundColor="white",e.style.padding="20px",e.style.borderRadius="5px",e.style.maxWidth="600px",e.style.margin="0 auto";const t=localStorage.getItem("memberGroup")||"-",o=localStorage.getItem("AIMSnumber"),a=localStorage.getItem("fromMonth"),n=localStorage.getItem("fromYear"),i=localStorage.getItem("toMonth"),d=localStorage.getItem("toYear"),c=document.getElementById("notesTextarea").value;let r='';o&&(r+=`<div class="aims-display"><span class="aims-title">AIMS: ${o}</span>`,(a&&n)&&(i&&d?a===i&&n===d?r+=`<div class="date-range-display">For: ${a} ${n}</div>`:r+=`<div class="date-range-display">From: ${a} ${n} to ${i} ${d}</div>`:r+=`<div class="date-range-display">For: ${a} ${n}</div>`),r+='</div>');let s='',l=0;document.querySelectorAll("#myTable tbody tr").forEach(function(e,o){if(o===document.querySelectorAll("#myTable tbody tr").length-1)return;const t=e.cells[0].textContent,a=e.cells[1].textContent;'-'!==a&&t&&t.trim()!==''&&(l+=parseFloat(a.replace(/,/g,''))||0,s+=`<tr><td>${t}</td><td>${a}</td></tr>`)});const u=document.createElement("table");u.className="capture-table",u.innerHTML=`<thead><tr><th>Funds</th><th>Amount (Rs)</th></tr></thead><tbody><tr><td colspan="2" style="text-align:center;font-weight:bold;background-color:#f8f9fa;padding:15px;font-size:1.2rem">Chanda ${t} Breakdown</td></tr>${s}</tbody>`;const m=document.createElement("div");m.className="text-right",m.innerHTML=`<div class="capture-total">Total : Rs ${l.toLocaleString()}</div>`;const p=document.createElement("div");p.innerHTML=`<strong>Notes:</strong><div class="mt-2 p-2 bg-light rounded" style="min-height:50px">${c.trim()?c.replace(/\n/g,'<br>'):'<i>No notes added</i>'}</div>`;return e.innerHTML=r,e.appendChild(u),e.appendChild(m),e.appendChild(p),e}
+        function saveAsImage(){document.getElementById('loadingSpinner').style.display='block';const e=createCleanCapture();document.body.appendChild(e);html2canvas(e,{backgroundColor:'#ffffff',scale:2,useCORS:!0,logging:!1,width:e.offsetWidth,height:e.offsetHeight}).then(function(t){const o=t.toDataURL('image/png'),a=document.getElementById("imageDownload");a.href=o,a.download=`Chanda_${localStorage.getItem("memberGroup")||"Breakdown"}_${new Date().toISOString().slice(0,10)}.png`,a.click(),document.body.removeChild(e),document.getElementById('loadingSpinner').style.display='none',showImageSuccessMessage()}).catch(function(e){console.error('Error generating image:',e),document.getElementById('loadingSpinner').style.display='none',document.body.removeChild(e),alert('Error generating image. Please try again.')})}
+        function shareImage(){document.getElementById('loadingSpinner').style.display='block';const e=createCleanCapture();document.body.appendChild(e);html2canvas(e,{backgroundColor:'#ffffff',scale:2,useCORS:!0,logging:!1,width:e.offsetWidth,height:e.offsetHeight}).then(function(t){const o=t.toDataURL('image/png');document.body.removeChild(e);fetch(o).then(function(e){return e.blob()}).then(function(e){const t=new File([e],`Chanda_${localStorage.getItem("memberGroup")||"Breakdown"}.png`,{type:'image/png'});navigator.share({files:[t],title:'Chanda Breakdown',text:'My Chanda calculation breakdown'}).catch(function(e){console.log('Sharing failed:',e),saveAsImage()})}).catch(function(e){console.log('Blob conversion failed:',e),saveAsImage()});document.getElementById('loadingSpinner').style.display='none'}).catch(function(e){console.error('Error generating image:',e),document.getElementById('loadingSpinner').style.display='none',document.body.removeChild(e),alert('Error generating image. Please try again.')})}
+    </script>
 </body>
 <footer class="footer mt-auto py-3 bg-dark">
-<div class="container">
-<p><span style="color:#ffc107">Contact : <span style="color:#ffffff"><a style="color:#ffffff" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span></p>
-</div>
+    <div class="container">
+        <p><span style="color:#ffc107">Contact : <span style="color:#ffffff"><a style="color:#ffffff" title="Contact " href="mailto:darussalaamoffice@gmail.com" target="_blank">darussalaamoffice@gmail.com</a></span></span>
+        </p>
+    </div>
 </footer>
+
 </html>
