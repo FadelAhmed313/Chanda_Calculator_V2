@@ -103,13 +103,6 @@
       margin-bottom: 20px;
     }
     
-    .calculation-result {
-      background-color: #e9ecef;
-      border-radius: 5px;
-      padding: 15px;
-      margin-top: 20px;
-    }
-    
     .total-amount {
       font-size: 1.5rem;
       font-weight: bold;
@@ -134,6 +127,10 @@
     
     .aims-title {
       color: #ffc107;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
     }
     
     .error-message {
@@ -155,6 +152,19 @@
       z-index: 1002;
       display: none;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .total-row {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .aims-display {
+      background-color: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border-left: 4px solid #ffc107;
     }
   </style>
 </head>
@@ -226,9 +236,14 @@
       
       <div class="card mt-4">
         <div class="card-header">
-          <h5 class="mb-0" id="chandaBreakdownTitle">Chanda Breakdown</h5>
+          <h5 class="mb-0">Chanda Breakdown</h5>
         </div>
         <div class="card-body">
+          <!-- AIMS Display -->
+          <div id="aimsDisplay" class="aims-display" style="display: none;">
+            <span class="aims-title" id="aimsDisplayText"></span>
+          </div>
+          
           <table id="myTable" class="table mt-4">
             <thead>
               <tr>
@@ -268,7 +283,7 @@
                 <td id="waqfValue">-</td>
                 <td><input type="number" id="inputWaqf" style="width:75%" min="0" value="0"></td>
               </tr>
-              <tr>
+              <tr class="total-row">
                 <td style="font-weight: bold;">Total</td>
                 <td style="font-weight: bold;" id="totalValue">-</td>
                 <td style="font-weight: bold;" id="additionalFund">
@@ -280,13 +295,10 @@
             </tbody>
           </table>
           
-          <div class="calculation-result">
-            <h5>Monthly Chanda Total: <span class="total-amount" id="finalTotalValue">Rs 0</span></h5>
-            <!-- Notes/Remarks Textarea -->
-            <div class="form-group mt-3">
-              <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
-              <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
-            </div>
+          <!-- Notes/Remarks Textarea -->
+          <div class="form-group mt-4">
+            <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
+            <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
           </div>
         </div>
       </div>
@@ -480,6 +492,9 @@
       
       // Check if member group is set, if not go to settings
       checkMemberGroup();
+      
+      // Update AIMS display
+      updateAimsDisplay();
     }
 
     function initNavigation() {
@@ -636,14 +651,16 @@
       });
     }
 
-    function updateChandaBreakdownTitle() {
+    function updateAimsDisplay() {
       const aimsNumber = localStorage.getItem("AIMSnumber");
-      const titleElement = document.getElementById("chandaBreakdownTitle");
+      const aimsDisplay = document.getElementById("aimsDisplay");
+      const aimsDisplayText = document.getElementById("aimsDisplayText");
       
       if (aimsNumber) {
-        titleElement.innerHTML = `<span class="aims-title">AIMS: ${aimsNumber}</span> - Chanda Breakdown`;
+        aimsDisplayText.textContent = `AIMS: ${aimsNumber}`;
+        aimsDisplay.style.display = "block";
       } else {
-        titleElement.textContent = "Chanda Breakdown";
+        aimsDisplay.style.display = "none";
       }
     }
 
@@ -803,7 +820,6 @@
         document.getElementById("tehrikValue").textContent = tehrikValue;
         document.getElementById("waqfValue").textContent = waqfValue;
         document.getElementById("totalValue").textContent = total || '-';
-        document.getElementById("finalTotalValue").textContent = `Rs ${total}`;
         
         // Hide loading spinner
         document.getElementById('loadingSpinner').style.display = 'none';
@@ -821,7 +837,6 @@
       document.getElementById("tehrikValue").textContent = "-";
       document.getElementById("waqfValue").textContent = "-";
       document.getElementById("totalValue").textContent = "-";
-      document.getElementById("finalTotalValue").textContent = "Rs 0";
     }
 
     function saveSettings(event) {
@@ -844,8 +859,8 @@
       localStorage.setItem("isMusis", isMusis);
       localStorage.setItem("memberGroup", memberGroup);
       
-      // Update Chanda Breakdown title
-      updateChandaBreakdownTitle();
+      // Update AIMS display
+      updateAimsDisplay();
       
       // Show success message
       showSuccessMessage();
