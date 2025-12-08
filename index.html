@@ -126,7 +126,7 @@
     }
     
     .aims-title {
-      color: #ffc107;
+      color: #28a745; /* Changed from #ffc107 to #28a745 */
       font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 10px;
@@ -171,6 +171,79 @@
       font-size: 0.9rem;
       color: #6c757d;
       margin-top: 5px;
+      font-weight: bold; /* Added font-weight: bold */
+    }
+    
+    /* New styles for capture functionality */
+    .capture-container {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .capture-output {
+      display: none;
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+    
+    .capture-table {
+      width: 100%;
+      margin-bottom: 15px;
+      border-collapse: collapse;
+    }
+    
+    .capture-table th {
+      background-color: #343a40;
+      color: white;
+      padding: 10px;
+      text-align: left;
+    }
+    
+    .capture-table td {
+      padding: 8px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .capture-total {
+      font-weight: bold;
+      color: #28a745;
+      font-size: 1.2rem;
+    }
+    
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+    
+    @media print {
+      .navbar, .footer, .capture-container button, 
+      #captureOutput button, #captureBtn {
+        display: none !important;
+      }
+      
+      .capture-output {
+        display: block !important;
+        border: none;
+        box-shadow: none;
+      }
+      
+      body {
+        background-color: white !important;
+      }
+      
+      .page-section.active {
+        display: block !important;
+      }
+      
+      #home {
+        display: none !important;
+      }
     }
   </style>
 </head>
@@ -306,6 +379,76 @@
           <div class="form-group mt-4">
             <label for="notesTextarea"><strong>Notes/Remarks:</strong></label>
             <textarea id="notesTextarea" class="notes-textarea form-control" placeholder="Add any notes or remarks here..."></textarea>
+          </div>
+
+          <!-- Capture Button and Output -->
+          <div class="capture-container">
+            <button id="captureBtn" class="btn btn-success btn-lg btn-block">
+              <i class="fas fa-camera"></i> Capture Chanda Breakdown
+            </button>
+            
+            <div id="captureOutput" class="capture-output">
+              <h4 class="section-title">Chanda Breakdown Summary</h4>
+              
+              <!-- AIMS Display in Capture -->
+              <div id="captureAimsDisplay" class="aims-display" style="display: none;">
+                <span class="aims-title" id="captureAimsDisplayText"></span>
+                <div id="captureDateRangeDisplay" class="date-range-display"></div>
+              </div>
+              
+              <!-- Member Info -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <strong>Member Group:</strong> <span id="captureMemberGroup">-</span>
+                </div>
+                <div class="col-md-6">
+                  <strong>Member Type:</strong> <span id="captureMemberType">-</span>
+                </div>
+              </div>
+              
+              <!-- Salary Info -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <strong>Monthly Income:</strong> Rs <span id="captureSalary">-</span>
+                </div>
+              </div>
+              
+              <!-- Chanda Breakdown Table -->
+              <table class="capture-table">
+                <thead>
+                  <tr>
+                    <th>Funds</th>
+                    <th>Amount (Rs)</th>
+                  </tr>
+                </thead>
+                <tbody id="captureTableBody">
+                  <!-- Will be populated by JavaScript -->
+                </tbody>
+              </table>
+              
+              <!-- Total -->
+              <div class="text-right">
+                <div class="capture-total">Total Chanda: Rs <span id="captureTotal">-</span></div>
+              </div>
+              
+              <!-- Notes in Capture -->
+              <div class="mt-3">
+                <strong>Notes:</strong>
+                <div id="captureNotes" class="mt-2 p-2 bg-light rounded" style="min-height: 50px;">
+                  <i>No notes added</i>
+                </div>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="mt-4 text-center">
+                <button id="printCaptureBtn" class="btn btn-warning mr-2">
+                  <i class="fas fa-print"></i> Print
+                </button>
+                <button id="downloadCaptureBtn" class="btn btn-primary">
+                  <i class="fas fa-download"></i> Download as PDF
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -766,6 +909,15 @@
           saveNotes();
         }
       });
+      
+      // Capture button
+      document.getElementById("captureBtn").addEventListener("click", generateCapture);
+      
+      // Print button in capture output
+      document.getElementById("printCaptureBtn").addEventListener("click", printCapture);
+      
+      // Download PDF button
+      document.getElementById("downloadCaptureBtn").addEventListener("click", downloadAsPDF);
     }
 
     function updateAimsDisplay() {
@@ -1063,6 +1215,130 @@
       if (salary) {
         calculate();
       }
+    }
+
+    // Capture functionality
+    function generateCapture() {
+      // Get all necessary data
+      const salary = document.getElementById("salary").value || "0";
+      const isMusis = localStorage.getItem("isMusis") === "true";
+      const memberGroup = localStorage.getItem("memberGroup") || "-";
+      const aimsNumber = localStorage.getItem("AIMSnumber");
+      const fromMonth = localStorage.getItem("fromMonth");
+      const fromYear = localStorage.getItem("fromYear");
+      const toMonth = localStorage.getItem("toMonth");
+      const toYear = localStorage.getItem("toYear");
+      const notes = document.getElementById("notesTextarea").value;
+      
+      // Update capture display
+      document.getElementById("captureMemberGroup").textContent = memberGroup;
+      document.getElementById("captureMemberType").textContent = isMusis ? "Musis (Wassiyat)" : "Regular";
+      document.getElementById("captureSalary").textContent = salary ? parseInt(salary).toLocaleString() : "-";
+      
+      // Update AIMS display in capture
+      const captureAimsDisplay = document.getElementById("captureAimsDisplay");
+      const captureAimsDisplayText = document.getElementById("captureAimsDisplayText");
+      const captureDateRangeDisplay = document.getElementById("captureDateRangeDisplay");
+      
+      if (aimsNumber) {
+        captureAimsDisplayText.textContent = `AIMS: ${aimsNumber}`;
+        captureAimsDisplay.style.display = "block";
+        
+        // Display date range
+        let dateRangeText = '';
+        if (fromMonth && fromYear) {
+          if (toMonth && toYear) {
+            if (fromMonth === toMonth && fromYear === toYear) {
+              dateRangeText = `For: ${fromMonth} ${fromYear}`;
+            } else {
+              dateRangeText = `From: ${fromMonth} ${fromYear} to ${toMonth} ${toYear}`;
+            }
+          } else {
+            dateRangeText = `For: ${fromMonth} ${fromYear}`;
+          }
+        }
+        captureDateRangeDisplay.textContent = dateRangeText;
+      } else {
+        captureAimsDisplay.style.display = "none";
+      }
+      
+      // Get calculated values from the table (excluding roundoff)
+      const funds = [];
+      const tableRows = document.querySelectorAll("#myTable tbody tr");
+      
+      tableRows.forEach((row, index) => {
+        // Skip the total row and empty rows
+        if (index === tableRows.length - 1) return; // Skip total row
+        
+        const fundName = row.cells[0].textContent;
+        const amountCell = row.cells[1];
+        const amount = amountCell.textContent;
+        
+        // Only include rows with valid amounts (not '-')
+        if (amount !== '-' && fundName && fundName.trim() !== '') {
+          funds.push({
+            name: fundName,
+            amount: amount
+          });
+        }
+      });
+      
+      // Populate capture table
+      const captureTableBody = document.getElementById("captureTableBody");
+      captureTableBody.innerHTML = '';
+      
+      let captureTotal = 0;
+      
+      funds.forEach(fund => {
+        const row = document.createElement('tr');
+        
+        // Parse amount (remove commas for calculation)
+        const amountValue = parseFloat(fund.amount.replace(/,/g, '')) || 0;
+        captureTotal += amountValue;
+        
+        row.innerHTML = `
+          <td>${fund.name}</td>
+          <td>${amountValue.toLocaleString()}</td>
+        `;
+        captureTableBody.appendChild(row);
+      });
+      
+      // Update total
+      document.getElementById("captureTotal").textContent = captureTotal.toLocaleString();
+      
+      // Update notes
+      const captureNotes = document.getElementById("captureNotes");
+      if (notes.trim()) {
+        captureNotes.innerHTML = notes.replace(/\n/g, '<br>');
+      } else {
+        captureNotes.innerHTML = '<i>No notes added</i>';
+      }
+      
+      // Show the capture output
+      document.getElementById("captureOutput").style.display = 'block';
+      
+      // Scroll to capture output
+      document.getElementById("captureOutput").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function printCapture() {
+      const captureContent = document.getElementById("captureOutput").innerHTML;
+      const originalContent = document.body.innerHTML;
+      
+      document.body.innerHTML = `
+        <div class="container mt-4">
+          ${captureContent}
+        </div>
+      `;
+      
+      window.print();
+      document.body.innerHTML = originalContent;
+      window.location.reload(); // Reload to restore functionality
+    }
+
+    function downloadAsPDF() {
+      // Trigger print dialog for PDF saving
+      window.print();
     }
   </script>
 </body>
