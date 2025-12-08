@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
-    /* All previous CSS remains the same */
     .footer {
       position: relative;
       left: 0;
@@ -170,7 +169,6 @@
   </style>
 </head>
 <body>
-  <!-- All previous HTML remains the same -->
   <div id="offlineIndicator" class="offline-indicator">
     <span>Offline Mode</span>
   </div>
@@ -252,7 +250,7 @@
                 <th style="width:30%">Roundoff</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
               <tr>
                 <td id="aamString">Aam</td>
                 <td id="aamValue">-</td>
@@ -320,6 +318,103 @@
 
     <!-- Other pages remain the same -->
     <!-- ... -->
+    
+    <!-- AIMS Page -->
+    <div id="aims" class="page-section">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="section-title">Settings</h2>
+          <form id="settingsForm">
+            <div class="form-group">
+              <label for="AIMSnumber">Aims Number</label>
+              <input type="number" class="form-control" id="AIMSnumber" name="number">
+            </div>
+            
+            <div class="form-group">
+              <label><strong>Member Type:</strong></label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Musis" id="musisCheckbox">
+                <label class="form-check-label" for="musisCheckbox">
+                  Are you a Musis? <i class="fas fa-info-circle info-icon" title="Musis members follow the Wassiyat scheme with different rates"></i>
+                </label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="memberGroup"><strong>Member Group:</strong></label>
+              <select class="form-control" id="memberGroup" name="group" required>
+                <option value="">Select Member Group</option>
+                <option value="Khuddam">Khuddam</option>
+                <option value="Lajna">Lajna</option>
+                <option value="Non-earning Lajna">Non-earning Lajna</option>
+                <option value="Ansar">Ansar</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label><strong>Date Range:</strong></label>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>From Month:</label>
+                  <select class="form-control" id="fromMonth">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>From Year:</label>
+                  <select class="form-control" id="fromYear"></select>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <label>To Month (Optional):</label>
+                  <select class="form-control" id="toMonth">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>To Year (Optional):</label>
+                  <select class="form-control" id="toYear"></select>
+                </div>
+              </div>
+              <small class="form-text text-muted">If no date is selected, current month and year will be displayed.</small>
+            </div>
+            
+            <br>
+            <button id="saveSettings" type="submit" style="width:100%;" class="btn btn-warning">Save Settings</button>
+          </form>
+          <div class="container mt-4">
+            <div id="errorMessages" class="mt-3 text-danger"></div>
+            <div id="successMessages" class="mt-3 text-success"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <a id="imageDownload" download="Chanda_Breakdown.png"></a>
@@ -562,6 +657,7 @@
 
     function addRow() {
       const table = document.getElementById("myTable");
+      const tableBody = document.getElementById("tableBody");
       const newRow = table.insertRow(table.rows.length - 1);
       
       const fundCell = newRow.insertCell();
@@ -572,19 +668,24 @@
       fundInput.type = "text";
       fundInput.style.width = "100%";
       fundInput.placeholder = "Fund Name";
-      fundInput.className = "form-control";
+      fundInput.className = "form-control additional-fund-input";
       
       const amountInput = document.createElement("input");
       amountInput.type = "number";
       amountInput.style.width = "75%";
       amountInput.min = "0";
-      amountInput.className = "additionalField form-control";
+      amountInput.className = "additionalField form-control additional-fund-amount";
       amountInput.value = "0";
       amountInput.addEventListener("input", calculate);
       
       fundCell.appendChild(fundInput);
       amountCell.appendChild(amountInput);
       inputCell.innerHTML = "&nbsp;";
+      
+      // Add event listener to the new fund input
+      fundInput.addEventListener("input", function() {
+        calculate();
+      });
     }
 
     function calculate() {
@@ -601,6 +702,7 @@
         const inputTehrik = parseFloat(document.getElementById("inputTehrik").value) || 0;
         const inputWaqf = parseFloat(document.getElementById("inputWaqf").value) || 0;
         
+        // Get additional field values
         const additionalFields = document.querySelectorAll(".additionalField");
         let totalAdditional = 0;
         additionalFields.forEach(field => {
@@ -665,6 +767,7 @@
         const tehrikValue = inputTehrik > 0 ? inputTehrik : '-';
         const waqfValue = inputWaqf > 0 ? inputWaqf : '-';
         
+        // Calculate total including additional funds
         let total = aam + jalsa + khuddam + ijtema + inputTehrik + inputWaqf + totalAdditional;
         
         document.getElementById("aamString").textContent = aamString;
@@ -704,15 +807,14 @@
       const toMonth = document.getElementById("toMonth").value;
       const toYear = document.getElementById("toYear").value;
       
+      // FIX: Date range is not mandatory
       if (!memberGroup) {
         alert("Please select a Member Group.");
         return;
       }
       
-      if (AIMSnumber && (!fromMonth || !fromYear)) {
-        alert("Please select at least the 'From' month and year when entering an AIMS number.");
-        return;
-      }
+      // FIX: Removed validation for AIMS number requiring date
+      // Now date range is optional even if AIMS number is provided
       
       if (toMonth && toYear && fromMonth && fromYear) {
         const months = ["January", "February", "March", "April", "May", "June", 
@@ -735,18 +837,11 @@
       localStorage.setItem("isMusis", isMusis);
       localStorage.setItem("memberGroup", memberGroup);
       
-      if (fromMonth) {
-        localStorage.setItem("fromMonth", fromMonth);
-      }
-      if (fromYear) {
-        localStorage.setItem("fromYear", fromYear);
-      }
-      if (toMonth) {
-        localStorage.setItem("toMonth", toMonth);
-      }
-      if (toYear) {
-        localStorage.setItem("toYear", toYear);
-      }
+      // FIX: Save empty values if not selected
+      localStorage.setItem("fromMonth", fromMonth || "");
+      localStorage.setItem("fromYear", fromYear || "");
+      localStorage.setItem("toMonth", toMonth || "");
+      localStorage.setItem("toYear", toYear || "");
       
       updateAimsDisplay();
       showSuccessMessage();
@@ -806,17 +901,70 @@
       let tableHTML = '';
       let totalAmount = 0;
       
+      // FIX: Get ALL rows including additional funds
       const tableRows = document.querySelectorAll("#myTable tbody tr");
       tableRows.forEach((row, index) => {
+        // Skip the total row
         if (index === tableRows.length - 1) return;
         
-        const fundName = row.cells[0].textContent;
-        const amount = row.cells[1].textContent;
+        // Get fund name - could be text content or input value
+        let fundName = '';
+        const firstCell = row.cells[0];
+        if (firstCell.querySelector('input')) {
+          // This is an additional fund with an input
+          fundName = firstCell.querySelector('input').value.trim();
+        } else {
+          // This is a standard fund with text
+          fundName = firstCell.textContent.trim();
+        }
         
-        if (amount !== '-' && fundName && fundName.trim() !== '') {
-          const amountValue = parseFloat(amount.replace(/,/g, '')) || 0;
-          totalAmount += amountValue;
+        // Get amount - could be text content or input value
+        let amount = '';
+        const secondCell = row.cells[1];
+        if (secondCell.querySelector('input')) {
+          // This is an additional fund amount with an input
+          const amountInput = secondCell.querySelector('input');
+          amount = amountInput.value;
+          if (amount && parseFloat(amount) > 0) {
+            const amountValue = parseFloat(amount) || 0;
+            totalAmount += amountValue;
+            amount = amountValue.toLocaleString();
+          }
+        } else {
+          // This is a standard fund amount with text
+          amount = secondCell.textContent;
+          if (amount !== '-') {
+            const amountValue = parseFloat(amount.replace(/,/g, '')) || 0;
+            totalAmount += amountValue;
+          }
+        }
+        
+        // Only include rows with valid fund names and amounts
+        if (fundName && amount && amount !== '-' && amount !== '0') {
           tableHTML += `<tr><td style="padding:8px;border-bottom:1px solid #dee2e6">${fundName}</td><td style="padding:8px;border-bottom:1px solid #dee2e6">${amount}</td></tr>`;
+        }
+      });
+      
+      // Also include standard funds that might have '-' as value but should be shown
+      const standardFunds = [
+        { name: document.getElementById("aamString").textContent, value: document.getElementById("aamValue").textContent },
+        { name: "Jalsa", value: document.getElementById("jalsaValue").textContent },
+        { name: document.getElementById("groupString").textContent, value: document.getElementById("khuddamValue").textContent },
+        { name: "Ijtema", value: document.getElementById("ijtemaValue").textContent },
+        { name: "Tehrik-e-Jadid", value: document.getElementById("tehrikValue").textContent },
+        { name: "Waqf-e-Jadid", value: document.getElementById("waqfValue").textContent }
+      ];
+      
+      // Add standard funds that weren't already included
+      standardFunds.forEach(fund => {
+        if (fund.name && fund.value !== '-') {
+          // Check if this fund is already in the tableHTML
+          if (!tableHTML.includes(`<td>${fund.name}</td>`)) {
+            const amountValue = parseFloat(fund.value.replace(/,/g, '')) || 0;
+            if (amountValue > 0) {
+              tableHTML += `<tr><td style="padding:8px;border-bottom:1px solid #dee2e6">${fund.name}</td><td style="padding:8px;border-bottom:1px solid #dee2e6">${amountValue.toLocaleString()}</td></tr>`;
+            }
+          }
         }
       });
       
